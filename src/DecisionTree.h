@@ -12,6 +12,11 @@ public:
 
 	StructureType recordStructure;
 
+	void loadRecordStructure(std::string const& str_)
+	{
+		return this->loadRecordStructure(str_.data(), str_.data() + str_.size());
+	}
+
 	void loadRecordStructure(char const* beg_, char const* end_);
 };
 
