@@ -42,6 +42,23 @@ public:
 	DecisionTreeNode* succeeded = nullptr;
 };
 
+template <typename TUnaryPred>
+DecisionTreeNode* forEachUntil(DecisionTreeNode &head_, TUnaryPred const& whatToDo_, TUnaryPred const& shouldStop_)
+{	
+	whatToDo_(head_);
+
+	if (shouldStop_(head_))
+		return &head_;
+
+	DecisionTreeNode* toReturn = nullptr;
+	if (head_.failed)
+		toReturn = forEachUntil(*head_.failed, whatToDo_, shouldStop_);
+	if (head_.succeeded && !toReturn)
+		toReturn = forEachUntil(*head_.succeeded, whatToDo_, shouldStop_);
+
+	return toReturn;
+}
+
 void readNode(DecisionTreeNode &node_, char const* beg_, char const* end_);
 char const* readNodeCondition(DecisionTreeNode::Condition &cond_, char const* beg_, char const* end_);
 char const* readNodeAnchor(DecisionTreeNode::Anchor &anchor_, char const* beg_, char const* end_);
