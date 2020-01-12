@@ -2,23 +2,44 @@
 
 #include "Record.h"
 
-template <std::size_t TMaxAttributes>
-class DecisionTree
+#include <string>
+
+class DecisionTreeNode
 {
 public:
-	constexpr static std::size_t MaxAttributes = TMaxAttributes;
-	using StructureType = RecordStructure<MaxAttributes>;
-	using RecordType 	= AttributeArray<MaxAttributes>;
-
-	StructureType recordStructure;
-
-	void loadRecordStructure(std::string const& str_)
+	struct Condition
 	{
-		return this->loadRecordStructure(str_.data(), str_.data() + str_.size());
-	}
+		std::string attributeName;
+		enum {
+			LowerThan,
+			GreaterThan
+		} op;
+		double value;
+	};
 
-	void loadRecordStructure(char const* beg_, char const* end_);
+	struct Anchor
+	{
+		Anchor() = default;
+		Anchor(std::string label_);
+		Anchor(std::uint32_t nodeIndex_);
+
+		std::string label;
+		std::uint32_t nodeIndex = 0;
+
+		bool isLabel = false;
+	};
+
+	std::uint32_t index = 0;
+
+	Condition cond;
+
+	Anchor failedAnchor;
+	Anchor succeededAnchor;
+
+	DecisionTreeNode* failed = nullptr;
+	DecisionTreeNode* succeeded = nullptr;
 };
 
-#include "DecisionTree.inl"
-
+void readNode(DecisionTreeNode &node_, char const* beg_, char const* end_);
+char const* readNodeCondition(DecisionTreeNode::Condition &cond_, char const* beg_, char const* end_);
+char const* readNodeAnchor(DecisionTreeNode::Anchor &anchor_, char const* beg_, char const* end_);
