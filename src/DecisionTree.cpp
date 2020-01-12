@@ -27,8 +27,7 @@ void readNode(DecisionTreeNode &node_, char const* beg_, char const* end_)
 	constexpr char lineCommentCharacter = '%';
 
 	// Trim whitespaces at the beginning of the string
-	while(beg_ != end_ && isWhitespace(*beg_))
-		++beg_;
+	beg_ = findFirstNonSpace(beg_, end_);
 
 	// Trim line comment
 	end_ = std::find(beg_, end_, lineCommentCharacter);
