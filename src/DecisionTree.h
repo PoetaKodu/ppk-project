@@ -7,6 +7,8 @@
 class DecisionTreeNode
 {
 public:
+	~DecisionTreeNode();
+
 	struct Condition
 	{
 		std::string attributeName;

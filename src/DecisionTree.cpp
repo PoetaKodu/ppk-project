@@ -5,6 +5,15 @@
 #include <string>
 
 ///////////////////////////////////////////////////////////////////
+DecisionTreeNode::~DecisionTreeNode()
+{
+	if (failed)
+		delete failed;
+	if (succeeded)
+		delete succeeded;
+}
+
+///////////////////////////////////////////////////////////////////
 DecisionTreeNode::Anchor::Anchor(std::string label_)
 	:
 	label( std::move(label_) ),
