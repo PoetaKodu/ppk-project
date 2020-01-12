@@ -3,12 +3,16 @@ cmake_minimum_required(VERSION 3.0)
 project(Decision)
 
 set(DECISION_HEADERS
+		src/Decision.h
+		src/ArgumentParsing.h
 		src/AttributeTree.h
 		src/DecisionTree.h
 	)
 
 set(DECISION_SOURCES
 		src/Main.cpp
+		src/Decision.cpp
+		src/ArgumentParsing.cpp
 		src/AttributeTree.cpp
 		src/DecisionTree.cpp
 	)
