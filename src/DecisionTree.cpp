@@ -31,6 +31,49 @@ DecisionTreeNode::Anchor::Anchor(std::uint32_t nodeIndex_)
 }
 
 ///////////////////////////////////////////////////////////////////
+DecisionTreeNode* readTree(char const* beg_, char const* end_)
+{
+	constexpr char newLineCharacter = '\n';
+
+	DecisionTreeNode* root = nullptr;
+
+	do
+	{
+		auto endOfLine = std::find(beg_, end_, newLineCharacter);
+
+		DecisionTreeNode node;
+		readNode(node, beg_, endOfLine);
+
+		if (!root)
+		{
+			root = new DecisionTreeNode( std::move(node) );
+		}
+		else
+		{
+			forEachUntil(*root,
+				[&](DecisionTreeNode & n)
+				{
+					if (!n.failedAnchor.isLabel && n.failedAnchor.nodeIndex == node.index)
+						n.failed = new DecisionTreeNode{ std::move(node) };
+					else if (!n.succeededAnchor.isLabel && n.succeededAnchor.nodeIndex == node.index)
+						n.succeeded = new DecisionTreeNode{ std::move(node) };
+				},
+				[&](DecisionTreeNode & n)
+				{
+					return (!n.failedAnchor.isLabel && n.failedAnchor.nodeIndex == node.index) ||
+						(!n.succeededAnchor.isLabel && n.succeededAnchor.nodeIndex == node.index);
+				}
+			);
+		}
+
+		beg_ = endOfLine;
+	}
+	while(beg_ != end_);
+
+	return root;
+}
+
+///////////////////////////////////////////////////////////////////
 void readNode(DecisionTreeNode &node_, char const* beg_, char const* end_)
 {
 	constexpr char lineCommentCharacter = '%';
