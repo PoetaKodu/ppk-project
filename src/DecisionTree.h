@@ -7,6 +7,8 @@
 class DecisionTreeNode
 {
 public:
+	DecisionTreeNode() = default;
+	DecisionTreeNode(DecisionTreeNode && rhs_);
 	~DecisionTreeNode();
 
 	struct Condition

@@ -3,6 +3,18 @@
 #include "TextHelper.h"
 
 #include <string>
+#include <iostream>
+
+///////////////////////////////////////////////////////////////////
+DecisionTreeNode::DecisionTreeNode(DecisionTreeNode && rhs_)
+{
+	index = rhs_.index;
+	std::swap(rhs_.cond, cond);
+	std::swap(rhs_.succeededAnchor, succeededAnchor);
+	std::swap(rhs_.failedAnchor, failedAnchor);
+	std::swap(rhs_.succeeded, succeeded);
+	std::swap(rhs_.failed, failed);
+}
 
 ///////////////////////////////////////////////////////////////////
 DecisionTreeNode::~DecisionTreeNode()
@@ -66,9 +78,9 @@ DecisionTreeNode* readTree(char const* beg_, char const* end_)
 			);
 		}
 
-		beg_ = endOfLine;
+		beg_ = endOfLine + 1;
 	}
-	while(beg_ != end_);
+	while(beg_ <= end_);
 
 	return root;
 }
@@ -148,14 +160,14 @@ char const* readNodeAnchor(DecisionTreeNode::Anchor &anchor_, char const* beg_, 
 	using Anchor = DecisionTreeNode::Anchor;
 
 	auto anchorEnd = findFirstSpace(beg_, end_);
-
+	std::string b = std::string{ beg_, anchorEnd};
 	// Try to read index:
 	try {
-		anchor_ = Anchor{ std::stoul( std::string{ beg_, anchorEnd} ) };
+		anchor_ = Anchor{ std::stoul( b ) };
 	}
 	catch(...) {
 		// If failed, treat it as a label
-		anchor_ = Anchor{ std::string{beg_, anchorEnd } };
+		anchor_ = Anchor{ b };
 	}
 
 	return anchorEnd;
