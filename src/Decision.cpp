@@ -3,10 +3,12 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <stdexcept>
 
 static void displayHelp();
 static std::string readFileSequentially(std::string const& filePath_);
+static std::string parseInput(std::string fileContents, DecisionTreeNode const& decisionTree_);
 
 /////////////////////////////////////////
 void run(ExecSetup const & exec_)
@@ -31,12 +33,66 @@ void run(ExecSetup const & exec_)
 
 		std::cout << "# Reading input file: \"" << exec_.inputFile << "\"\n";
 
-		
+		std::string output;
+		{
+			std::string fileContents = readFileSequentially(exec_.inputFile);
+			if (fileContents.empty())
+				throw std::runtime_error("input file is empty or could not be read");
+
+			output = parseInput(std::move(fileContents), *decisionTree);
+		}
+
+		delete decisionTree;
 
 		std::cout << "# Writing output file: \"" << exec_.outputFile << '\"' << std::endl;
 
-		delete decisionTree;
+		std::ofstream outputFile(exec_.outputFile);
+		if (outputFile.is_open())
+			outputFile << output;
+		else
+			throw std::runtime_error("could not open output file for writing");
 	}
+}
+
+/////////////////////////////////////////
+std::string parseInput(std::string fileContents, DecisionTreeNode const& decisionTree_)
+{
+	struct Attribs {
+		std::string attributeName;
+		~Attribs() {
+			if (next) delete next;
+		}
+		Attribs* next = nullptr;
+	};
+
+	Attribs* attribsHead = nullptr;
+	Attribs** attribsTail = &attribsHead;
+
+	// First line with attribs:
+
+	std::istringstream iss(fileContents);
+
+	std::string firstLine;
+	// Read first line.
+	{
+		std::getline(iss, firstLine);
+		std::istringstream issF(firstLine);
+		std::string attributeName;
+		while(issF >> attributeName)
+		{
+			if (attributeName == "%")
+				break;
+
+			(*attribsTail) = new Attribs();
+			(*attribsTail)->attributeName = std::move(attributeName);
+			attribsTail = &(*attribsTail)->next;
+		}
+	}
+
+	// TODO: delete on throw!
+	delete attribsHead;
+
+	return "";
 }
 
 /////////////////////////////////////////
