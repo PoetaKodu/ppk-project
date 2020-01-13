@@ -17,8 +17,6 @@ void run(ExecSetup const & exec_)
 	}
 	else
 	{
-		std::cout << "# Reading input file: \"" << exec_.inputFile << "\"\n";
-
 		std::cout << "# Reading tree file: \"" << exec_.treeFile << "\"\n";
 
 		DecisionTreeNode* decisionTree = nullptr;
@@ -31,7 +29,13 @@ void run(ExecSetup const & exec_)
 			decisionTree = readTree(fileContents.data(), fileContents.data() + fileContents.size());
 		}
 
+		std::cout << "# Reading input file: \"" << exec_.inputFile << "\"\n";
+
+		
+
 		std::cout << "# Writing output file: \"" << exec_.outputFile << '\"' << std::endl;
+
+		delete decisionTree;
 	}
 }
 
