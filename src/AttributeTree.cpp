@@ -42,7 +42,6 @@ void setAttribute(AttributeTreeNode*& treeRoot_, std::string name_, double value
 ////////////////////////////////////////////////////////////////////
 double getAttributeValue(AttributeTreeNode const* treeRoot_, std::string const & name_)
 {
-	auto processedNode = treeRoot_;
 	while (treeRoot_)
 	{
 		auto comp = name_.compare(treeRoot_->name);
