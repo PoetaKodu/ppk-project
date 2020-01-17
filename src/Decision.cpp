@@ -1,6 +1,8 @@
 #include "Decision.h"
 #include "DecisionTree.h"
 
+#include "AttributeTree.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -58,7 +60,7 @@ void run(ExecSetup const & exec_)
 std::string parseInput(std::string fileContents, DecisionTreeNode const& decisionTree_)
 {
 	struct Attribs {
-		std::string attributeName;
+		std::string name;
 		~Attribs() {
 			if (next) delete next;
 		}
@@ -72,11 +74,11 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 
 	std::istringstream iss(fileContents);
 
-	std::string firstLine;
+	std::string currentLine;
 	// Read first line.
 	{
-		std::getline(iss, firstLine);
-		std::istringstream issF(firstLine);
+		std::getline(iss, currentLine);
+		std::istringstream issF(currentLine);
 		std::string attributeName;
 		while(issF >> attributeName)
 		{
@@ -84,8 +86,31 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 				break;
 
 			(*attribsTail) = new Attribs();
-			(*attribsTail)->attributeName = std::move(attributeName);
+			(*attribsTail)->name = std::move(attributeName);
 			attribsTail = &(*attribsTail)->next;
+		}
+	}
+
+	{
+		
+		while(std::getline(iss, currentLine))
+		{
+			Attribs* at = attribsHead;
+			std::istringstream issF(currentLine);
+
+			AttributeTreeNode *record = nullptr;
+			while(at)
+			{
+				double val;
+				if (!(issF >> val))
+					throw std::runtime_error("failed to read parameter \"" + at->name + "\"");
+				// TODO: /\ delete record
+
+				setAttribute(record, at->name, val);
+
+				at = at->next;
+			}
+			delete record;
 		}
 	}
 
