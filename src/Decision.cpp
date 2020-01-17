@@ -22,7 +22,7 @@ void run(ExecSetup const & exec_)
 		std::cout << "# Reading tree file: \"" << exec_.treeFile << "\"\n";
 
 		DecisionTreeNode* decisionTree = nullptr;
-
+		
 		{
 			std::string fileContents = readFileSequentially(exec_.treeFile);
 			if (fileContents.empty())
@@ -80,7 +80,7 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 		std::string attributeName;
 		while(issF >> attributeName)
 		{
-			if (attributeName == "%")
+			if (attributeName.size() >= 1 && attributeName[0] == '%')
 				break;
 
 			(*attribsTail) = new Attribs();
