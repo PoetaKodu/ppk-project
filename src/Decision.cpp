@@ -68,6 +68,34 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 		Attribs* next = nullptr;
 	};
 
+	struct CategorizedRecords
+	{
+		~CategorizedRecords()
+		{
+			if (recordsHead) delete recordsHead;
+			if (next) delete next;
+		}
+
+		struct Records
+		{
+			Records(AttributeTreeNode* rec = nullptr)
+				: record(rec)
+			{
+			}
+			~Records() {
+				if (next) delete next;
+			}
+			AttributeTreeNode* record;
+			Records* next = nullptr;
+		};
+
+		std::string categoryName;
+		Records* recordsHead = nullptr;
+		Records* recordsTail = nullptr;
+
+		CategorizedRecords* next = nullptr;
+	};
+
 	Attribs* attribsHead = nullptr;
 	Attribs** attribsTail = &attribsHead;
 
@@ -92,8 +120,8 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 		}
 	}
 
+	CategorizedRecords* categories = nullptr;
 	{
-		
 		while(std::getline(iss, currentLine))
 		{
 			Attribs* at = attribsHead;
@@ -112,23 +140,78 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 				at = at->next;
 			}
 
-			std::cout << categorize(*record, decisionTree_) << " ";
-			at = attribsHead;
-			while (at)
+			std::string category = categorize(*record, decisionTree_);
+			std::cout << category << std::endl;
+			
+			CategorizedRecords* cat = nullptr;
+			if (!categories)
 			{
-				std::cout << getAttributeValue(record, at->name) << " ";
-				at = at->next;
+				cat = categories = new CategorizedRecords;
+				categories->categoryName = category;
 			}
-			std::cout << std::endl;
-
-			delete record;
+			else
+			{
+				CategorizedRecords** processedCat = &categories;
+				while (*processedCat)
+				{
+					if ((*processedCat)->categoryName == category)
+						break;
+					else
+						processedCat = &((*processedCat)->next);
+				}
+				if (*processedCat == nullptr)
+				{
+					*processedCat = new CategorizedRecords;
+					(*processedCat)->categoryName = category;
+				}
+				cat = *processedCat;
+			}
+				
+			auto rec = new CategorizedRecords::Records{ record };
+			if (!cat->recordsHead)
+				cat->recordsHead = cat->recordsTail = rec;
+			else
+			{
+				cat->recordsTail->next = rec;
+				cat->recordsTail = rec;
+			}
 		}
 	}
 
+	std::string outputStr;
+	{
+		std::stringstream output;
+
+		CategorizedRecords *cat = categories;
+		while (cat)
+		{
+			output << cat->categoryName << std::endl;
+			auto rec = cat->recordsHead;
+			while (rec)
+			{
+				auto at = attribsHead;
+				while(at)
+				{
+					output << getAttributeValue(rec->record, at->name) << ' ';
+					at = at->next;
+				}
+
+				output << std::endl;
+				rec = rec->next;
+			}
+
+			cat = cat->next;
+		}
+
+		outputStr = output.str();
+	}
+
+
 	// TODO: delete on throw!
+	delete categories;
 	delete attribsHead;
 
-	return "";
+	return outputStr;
 }
 
 /////////////////////////////////////////
