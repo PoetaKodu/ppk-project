@@ -11,6 +11,7 @@
 static void displayHelp();
 static std::string readFileSequentially(std::string const& filePath_);
 static std::string parseInput(std::string fileContents, DecisionTreeNode const& decisionTree_);
+static std::string categorize(AttributeTreeNode const& record, DecisionTreeNode const& decisionTree_);
 
 /////////////////////////////////////////
 void run(ExecSetup const & exec_)
@@ -110,6 +111,16 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 
 				at = at->next;
 			}
+
+			std::cout << categorize(*record, decisionTree_) << " ";
+			at = attribsHead;
+			while (at)
+			{
+				std::cout << getAttributeValue(record, at->name) << " ";
+				at = at->next;
+			}
+			std::cout << std::endl;
+
 			delete record;
 		}
 	}
@@ -119,6 +130,30 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 
 	return "";
 }
+
+/////////////////////////////////////////
+std::string categorize(AttributeTreeNode const& record, DecisionTreeNode const& decisionTree_)
+{
+	using CNode = DecisionTreeNode const;
+
+	CNode* root = &decisionTree_;
+	while (root)
+	{
+		bool choice = false; // left (false) / right (true)
+		if (root->cond.op == CNode::Condition::GreaterThan)
+			choice = getAttributeValue(&record, root->cond.attributeName) > root->cond.value;
+		else if (root->cond.op == CNode::Condition::GreaterThan)
+			choice = getAttributeValue(&record, root->cond.attributeName) < root->cond.value;
+
+		CNode::Anchor const& anch = choice ? root->succeededAnchor : root->failedAnchor;
+		if (anch.isLabel)
+			return anch.label;
+		else
+			root = choice ? root->succeeded : root->failed;
+	}
+	throw std::runtime_error("decision leaf is null");
+}
+
 
 /////////////////////////////////////////
 void displayHelp()
