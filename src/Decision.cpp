@@ -10,10 +10,18 @@
 #include <sstream>
 #include <stdexcept>
 
-static void displayHelp();
-static std::string readFileSequentially(std::string const& filePath_);
+// Helper aliases:
+using Record 		= AttributeTreeNode;
+using Records 		= ForwardList< UniquePtr<Record> >;
+using Category 		= std::pair<std::string, Records>;
+using Categories 	= ForwardList< Category >;
+using Attributes 	= ForwardList< std::string >;
+	
 static std::string parseInput(std::string fileContents, DecisionTreeNode const& decisionTree_);
 static std::string categorize(AttributeTreeNode const& record, DecisionTreeNode const& decisionTree_);
+static std::string serializeCategories(Categories const& categories_, Attributes const& attributes_);
+static std::string readFileSequentially(std::string const& filePath_);
+static void displayHelp();
 
 /////////////////////////////////////////
 void run(ExecSetup const & exec_)
@@ -62,12 +70,6 @@ void run(ExecSetup const & exec_)
 /////////////////////////////////////////
 std::string parseInput(std::string fileContents, DecisionTreeNode const& decisionTree_)
 {
-	using Record 		= AttributeTreeNode;
-	using Records 		= ForwardList< UniquePtr<Record> >;
-	using Category 		= std::pair<std::string, Records>;
-	using Categories 	= ForwardList< Category >;
-	using Attributes 	= ForwardList<std::string>;
-	
 	Attributes attributes;
 	Categories categories;
 
@@ -109,7 +111,6 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 
 		// Determine category name:
 		std::string catName = categorize(*record, decisionTree_);
-		std::cout << catName << std::endl; // TODO: remove this line.
 		
 		// Find specified category...
 		auto cat = categories.findIf(
@@ -117,50 +118,18 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 					return c.first == catName;
 				}
 			);
+
 		// ... or create new one if not found.
 		if (!cat)
-		{
 			cat = &(categories.push( { std::move(catName), {} } ));
-		}
 
 		// Push record:
 		auto& records = cat->value.second;
 
 		records.push( std::move(record) );
 	}
-	
 
-	std::string outputStr;
-	{
-		std::stringstream output;
-
-		Categories::Node* cat = categories.head;
-		while (cat)
-		{
-			output << cat->value.first << std::endl;
-			
-			Records::Node* rec = cat->value.second.head;
-			while (rec)
-			{
-				auto at = attributes.head;
-				while(at)
-				{
-					output << getAttributeValue(rec->value.ptr, at->value) << ' ';
-					at = at->next;
-				}
-
-				output << std::endl;
-				rec = rec->next;
-			}
-
-			cat = cat->next;
-		}
-
-		outputStr = output.str();
-	}
-
-	// TODO: delete on throw!
-	return outputStr;
+	return serializeCategories(categories, attributes);
 }
 
 /////////////////////////////////////////
@@ -186,23 +155,36 @@ std::string categorize(AttributeTreeNode const& record, DecisionTreeNode const& 
 	throw std::runtime_error("decision leaf is null");
 }
 
-
 /////////////////////////////////////////
-void displayHelp()
+static std::string serializeCategories(Categories const& categories_, Attributes const& attributes_)
 {
-	constexpr char const* helpContents =
-R"help(Decision Tree:
-This program parses records using decision tree.
-Usage:
+	constexpr std::size_t outputStringReserve = 4 * 1024;
 
-	-h - displays this help
+	std::stringstream output(std::string(outputStringReserve, '\0'));
 
-	-i <file path> - [Required] - specifies input file path with records to parse
-	-t <file path> - [Required] - specifies input file path with decision tree structure
-	-o <file path> - [Required] - specifies output file path to write parsed records to
-)help";
+	Categories::Node* cat = categories_.head;
+	while (cat)
+	{
+		output << cat->value.first << std::endl;
+		
+		Records::Node* rec = cat->value.second.head;
+		while (rec)
+		{
+			auto at = attributes_.head;
+			while(at)
+			{
+				output << getAttributeValue(rec->value.ptr, at->value) << ' ';
+				at = at->next;
+			}
 
-	std::cout << helpContents;
+			output << std::endl;
+			rec = rec->next;
+		}
+
+		cat = cat->next;
+	}
+
+	return output.str();
 }
 
 /////////////////////////////////////////
@@ -225,4 +207,22 @@ std::string readFileSequentially(std::string const& filePath_)
 	
 	result.shrink_to_fit();
 	return result;
+}
+
+/////////////////////////////////////////
+void displayHelp()
+{
+	constexpr char const* helpContents =
+R"help(Decision Tree:
+This program parses records using decision tree.
+Usage:
+
+	-h - displays this help
+
+	-i <file path> - [Required] - specifies input file path with records to parse
+	-t <file path> - [Required] - specifies input file path with decision tree structure
+	-o <file path> - [Required] - specifies output file path to write parsed records to
+)help";
+
+	std::cout << helpContents;
 }
