@@ -34,7 +34,7 @@ void run(ExecSetup const & exec_)
 	{
 		std::cout << "# Reading tree file: \"" << exec_.treeFile << "\"\n";
 
-		DecisionTreeNode* decisionTree = nullptr;
+		UniquePtr<DecisionTreeNode> decisionTree;
 		
 		{
 			std::string fileContents = readFileSequentially(exec_.treeFile);
@@ -54,8 +54,6 @@ void run(ExecSetup const & exec_)
 
 			output = parseInput(std::move(fileContents), *decisionTree);
 		}
-
-		delete decisionTree;
 
 		std::cout << "# Writing output file: \"" << exec_.outputFile << '\"' << std::endl;
 
