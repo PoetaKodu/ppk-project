@@ -2,6 +2,7 @@
 #include "DecisionTree.h"
 
 #include "AttributeTree.h"
+#include "ForwardList.h"
 
 #include <iostream>
 #include <fstream>
@@ -60,14 +61,6 @@ void run(ExecSetup const & exec_)
 /////////////////////////////////////////
 std::string parseInput(std::string fileContents, DecisionTreeNode const& decisionTree_)
 {
-	struct Attribs {
-		std::string name;
-		~Attribs() {
-			if (next) delete next;
-		}
-		Attribs* next = nullptr;
-	};
-
 	struct CategorizedRecords
 	{
 		~CategorizedRecords()
@@ -96,14 +89,14 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 		CategorizedRecords* next = nullptr;
 	};
 
-	Attribs* attribsHead = nullptr;
-	Attribs** attribsTail = &attribsHead;
 
+	ForwardList<std::string> attributes;
 	// First line with attribs:
 
 	std::istringstream iss(fileContents);
 
 	std::string currentLine;
+
 	// Read first line.
 	{
 		std::getline(iss, currentLine);
@@ -114,9 +107,7 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 			if (attributeName.size() >= 1 && attributeName[0] == '%')
 				break;
 
-			(*attribsTail) = new Attribs();
-			(*attribsTail)->name = std::move(attributeName);
-			attribsTail = &(*attribsTail)->next;
+			attributes.push(attributeName);
 		}
 	}
 
@@ -124,7 +115,7 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 	{
 		while(std::getline(iss, currentLine))
 		{
-			Attribs* at = attribsHead;
+			auto at = attributes.head;
 			std::istringstream issF(currentLine);
 
 			AttributeTreeNode *record = nullptr;
@@ -132,10 +123,10 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 			{
 				double val;
 				if (!(issF >> val))
-					throw std::runtime_error("failed to read parameter \"" + at->name + "\"");
+					throw std::runtime_error("failed to read parameter \"" + at->value + "\"");
 				// TODO: /\ delete record
 
-				setAttribute(record, at->name, val);
+				setAttribute(record, at->value, val);
 
 				at = at->next;
 			}
@@ -189,10 +180,10 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 			auto rec = cat->recordsHead;
 			while (rec)
 			{
-				auto at = attribsHead;
+				auto at = attributes.head;
 				while(at)
 				{
-					output << getAttributeValue(rec->record, at->name) << ' ';
+					output << getAttributeValue(rec->record, at->value) << ' ';
 					at = at->next;
 				}
 
@@ -209,7 +200,6 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 
 	// TODO: delete on throw!
 	delete categories;
-	delete attribsHead;
 
 	return outputStr;
 }
