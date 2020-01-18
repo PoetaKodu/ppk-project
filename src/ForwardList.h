@@ -6,6 +6,7 @@ class ForwardList
 public:
 	class Node
 	{
+	public:
 		Node(T v)
 			: value(std::move(v))
 		{
