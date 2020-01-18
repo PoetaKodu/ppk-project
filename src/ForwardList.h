@@ -45,11 +45,17 @@ public:
 
 	Node& push(T value_)
 	{
-		end->next = new Node{ std::move(value_) };
-		end = end->next;
-		return end->value;
+		auto ptr = new Node{ std::move(value_) };
+		if (!head)
+			head = tail = ptr;
+		else
+		{
+			tail->next = ptr;
+			tail = tail->next;
+		}
+		return tail->value;
 	}
 
 	Node* head = nullptr;
-	Node* end = nullptr;
+	Node* tail = nullptr;
 };
