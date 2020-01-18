@@ -163,22 +163,27 @@ static std::string serializeCategories(Categories const& categories_, Attributes
 	Categories::Node* cat = categories_.head;
 	while (cat)
 	{
+		// Append category name:
 		output << cat->value.first << std::endl;
 		
+		// Iterate through every record that belongs to category
 		Records::Node* rec = cat->value.second.head;
 		while (rec)
 		{
+			// Iterate through every attribute:
 			auto at = attributes_.head;
 			while(at)
 			{
+				// Append attribute value:
 				output << getAttributeValue(rec->value.ptr, at->value) << ' ';
 				at = at->next;
 			}
 
+			// Append new line:
 			output << std::endl;
+			
 			rec = rec->next;
 		}
-
 		cat = cat->next;
 	}
 
