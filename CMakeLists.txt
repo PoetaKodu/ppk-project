@@ -7,6 +7,7 @@ set(DECISION_HEADERS
 		src/ArgumentParsing.h
 		src/AttributeTree.h
 		src/DecisionTree.h
+		src/ForwardList.h
 	)
 
 set(DECISION_SOURCES
