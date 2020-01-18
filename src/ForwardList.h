@@ -53,7 +53,7 @@ public:
 			tail->next = ptr;
 			tail = tail->next;
 		}
-		return tail;
+		return *tail;
 	}
 
 	Node* head = nullptr;
