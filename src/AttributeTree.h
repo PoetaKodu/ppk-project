@@ -7,7 +7,7 @@ class AttributeTreeNode
 {
 public:
 	AttributeTreeNode() = default;
-
+	AttributeTreeNode(AttributeTreeNode && rhs_);
 	AttributeTreeNode(std::string name_, double value_ = 0);
 
 	~AttributeTreeNode();

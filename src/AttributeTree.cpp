@@ -11,6 +11,17 @@ AttributeTreeNode::AttributeTreeNode(std::string name_, double value_ )
 }
 
 ////////////////////////////////////////////////////////////////////
+AttributeTreeNode::AttributeTreeNode(AttributeTreeNode && rhs_)
+	:
+	name( std::move(rhs_.name) ),
+	value( rhs_.value ),
+	left(rhs_.left),
+	right(rhs_.right)
+{
+	rhs_.left = rhs_.right = nullptr;
+}
+
+////////////////////////////////////////////////////////////////////
 AttributeTreeNode::~AttributeTreeNode()
 {
 	if (left)
