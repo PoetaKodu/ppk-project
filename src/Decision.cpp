@@ -3,6 +3,7 @@
 
 #include "AttributeTree.h"
 #include "ForwardList.h"
+#include "UniquePtr.h"
 
 #include <iostream>
 #include <fstream>
@@ -61,43 +62,19 @@ void run(ExecSetup const & exec_)
 /////////////////////////////////////////
 std::string parseInput(std::string fileContents, DecisionTreeNode const& decisionTree_)
 {
-	struct CategorizedRecords
-	{
-		~CategorizedRecords()
-		{
-			if (recordsHead) delete recordsHead;
-			if (next) delete next;
-		}
-
-		struct Records
-		{
-			Records(AttributeTreeNode* rec = nullptr)
-				: record(rec)
-			{
-			}
-			~Records() {
-				if (next) delete next;
-			}
-			AttributeTreeNode* record;
-			Records* next = nullptr;
-		};
-
-		std::string categoryName;
-		Records* recordsHead = nullptr;
-		Records* recordsTail = nullptr;
-
-		CategorizedRecords* next = nullptr;
-	};
-
-
-	ForwardList<std::string> attributes;
-	// First line with attribs:
+	using Record 		= AttributeTreeNode;
+	using Records 		= ForwardList< UniquePtr<Record> >;
+	using Category 		= std::pair<std::string, Records>;
+	using Categories 	= ForwardList< Category >;
+	using Attributes 	= ForwardList<std::string>;
+	
+	Attributes attributes;
+	Categories categories;
 
 	std::istringstream iss(fileContents);
 
 	std::string currentLine;
-
-	// Read first line.
+	// Read first line (with attributes):
 	{
 		std::getline(iss, currentLine);
 		std::istringstream issF(currentLine);
@@ -107,83 +84,68 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 			if (attributeName.size() >= 1 && attributeName[0] == '%')
 				break;
 
-			attributes.push(attributeName);
+			attributes.push(std::move(attributeName));
 		}
 	}
 
-	CategorizedRecords* categories = nullptr;
+	// Read the rest of the file (line by line)
+	while(std::getline(iss, currentLine))
 	{
-		while(std::getline(iss, currentLine))
+		std::istringstream issF(currentLine);
+
+		// Setup record (read every attribute one by one and insert to tree)
+		UniquePtr<Record> record;
+		auto at = attributes.head;
+		while(at)
 		{
-			auto at = attributes.head;
-			std::istringstream issF(currentLine);
+			double val;
+			if (!(issF >> val))
+				throw std::runtime_error("failed to read attribute \"" + at->value + "\"");
 
-			AttributeTreeNode *record = nullptr;
-			while(at)
-			{
-				double val;
-				if (!(issF >> val))
-					throw std::runtime_error("failed to read parameter \"" + at->value + "\"");
-				// TODO: /\ delete record
+			setAttribute(record.ptr, at->value, val);
 
-				setAttribute(record, at->value, val);
-
-				at = at->next;
-			}
-
-			std::string category = categorize(*record, decisionTree_);
-			std::cout << category << std::endl;
-			
-			CategorizedRecords* cat = nullptr;
-			if (!categories)
-			{
-				cat = categories = new CategorizedRecords;
-				categories->categoryName = category;
-			}
-			else
-			{
-				CategorizedRecords** processedCat = &categories;
-				while (*processedCat)
-				{
-					if ((*processedCat)->categoryName == category)
-						break;
-					else
-						processedCat = &((*processedCat)->next);
-				}
-				if (*processedCat == nullptr)
-				{
-					*processedCat = new CategorizedRecords;
-					(*processedCat)->categoryName = category;
-				}
-				cat = *processedCat;
-			}
-				
-			auto rec = new CategorizedRecords::Records{ record };
-			if (!cat->recordsHead)
-				cat->recordsHead = cat->recordsTail = rec;
-			else
-			{
-				cat->recordsTail->next = rec;
-				cat->recordsTail = rec;
-			}
+			at = at->next;
 		}
+
+		// Determine category name:
+		std::string catName = categorize(*record, decisionTree_);
+		std::cout << catName << std::endl; // TODO: remove this line.
+		
+		// Find specified category...
+		auto cat = categories.findIf(
+				[&](Category const& c) {
+					return c.first == catName;
+				}
+			);
+		// ... or create new one if not found.
+		if (!cat)
+		{
+			cat = &(categories.push( { std::move(catName), {} } ));
+		}
+
+		// Push record:
+		auto& records = cat->value.second;
+
+		records.push( std::move(record) );
 	}
+	
 
 	std::string outputStr;
 	{
 		std::stringstream output;
 
-		CategorizedRecords *cat = categories;
+		Categories::Node* cat = categories.head;
 		while (cat)
 		{
-			output << cat->categoryName << std::endl;
-			auto rec = cat->recordsHead;
+			output << cat->value.first << std::endl;
+			
+			Records::Node* rec = cat->value.second.head;
 			while (rec)
 			{
 				auto at = attributes.head;
 				while(at)
 				{
-					output << getAttributeValue(rec->record, at->value) << ' ';
+					output << getAttributeValue(rec->value.ptr, at->value) << ' ';
 					at = at->next;
 				}
 
@@ -197,10 +159,7 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 		outputStr = output.str();
 	}
 
-
 	// TODO: delete on throw!
-	delete categories;
-
 	return outputStr;
 }
 
