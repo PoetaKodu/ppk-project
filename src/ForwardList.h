@@ -36,7 +36,7 @@ public:
 		Node* t = head;
 		while(t)
 		{
-			if (accept(t->value))
+			if (accept_(t->value))
 				return t;
 			t = t->next;
 		}
