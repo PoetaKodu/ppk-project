@@ -3,7 +3,7 @@
 #include <utility>
 
 ////////////////////////////////////////////////////////////////////
-AttributeTreeNode::AttributeTreeNode(std::string name_, double value_ )
+AttributeTree::Node::Node(std::string name_, double value_ )
 	:
 	name( std::move(name_) ),
 	value( value_ )
@@ -11,7 +11,7 @@ AttributeTreeNode::AttributeTreeNode(std::string name_, double value_ )
 }
 
 ////////////////////////////////////////////////////////////////////
-AttributeTreeNode::AttributeTreeNode(AttributeTreeNode && rhs_)
+AttributeTree::Node::Node(Node && rhs_)
 	:
 	name( std::move(rhs_.name) ),
 	value( rhs_.value ),
@@ -22,7 +22,7 @@ AttributeTreeNode::AttributeTreeNode(AttributeTreeNode && rhs_)
 }
 
 ////////////////////////////////////////////////////////////////////
-AttributeTreeNode::~AttributeTreeNode()
+AttributeTree::Node::~Node()
 {
 	if (left)
 		delete left;
@@ -31,9 +31,23 @@ AttributeTreeNode::~AttributeTreeNode()
 }
 
 ////////////////////////////////////////////////////////////////////
-void setAttribute(AttributeTreeNode*& treeRoot_, std::string name_, double value_)
+AttributeTree::AttributeTree(AttributeTree && rhs_)
+	:
+	root(rhs_.root)
 {
-	AttributeTreeNode** processedNode = &treeRoot_;
+	rhs_.root = nullptr;
+}
+
+////////////////////////////////////////////////////////////////////
+AttributeTree::~AttributeTree()
+{
+	if (root) delete root;
+}
+
+////////////////////////////////////////////////////////////////////
+void AttributeTree::set(std::string name_, double value_)
+{
+	Node** processedNode = &root;
 	while(*processedNode != nullptr)
 	{
 		auto comp = name_.compare((*processedNode)->name);
@@ -47,21 +61,22 @@ void setAttribute(AttributeTreeNode*& treeRoot_, std::string name_, double value
 			return;
 		}
 	}
-	*processedNode = new AttributeTreeNode{ std::move(name_), value_ };
+	*processedNode = new Node{ std::move(name_), value_ };
 }
 
 ////////////////////////////////////////////////////////////////////
-double getAttributeValue(AttributeTreeNode const* treeRoot_, std::string const & name_)
+double AttributeTree::get(std::string const & name_) const
 {
-	while (treeRoot_)
+	Node* n = root;
+	while (n)
 	{
-		auto comp = name_.compare(treeRoot_->name);
+		auto comp = name_.compare(n->name);
 		if (comp == 0)
-			return treeRoot_->value;
+			return n->value;
 		else if (comp < 0)
-			treeRoot_ = treeRoot_->left;
+			n = n->left;
 		else
-			treeRoot_ = treeRoot_->right;
+			n = n->right;
 	}
 	throw std::runtime_error("attribute does not exist");
 }

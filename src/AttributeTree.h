@@ -1,25 +1,35 @@
-#pragma once
 
+#pragma once
 #include <string>
 #include <stdexcept>
 
-class AttributeTreeNode
+class AttributeTree
 {
 public:
-	AttributeTreeNode() = default;
-	AttributeTreeNode(AttributeTreeNode && rhs_);
-	AttributeTreeNode(std::string name_, double value_ = 0);
+	class Node
+	{
+	public:
+		Node() = default;
+		Node(Node && rhs_);
+		Node(std::string name_, double value_ = 0);
 
-	~AttributeTreeNode();
+		~Node();
 
-	std::string name;
-	double value = 0;
+		std::string name;
+		double value = 0;
 
-	// Children
-	AttributeTreeNode* left = nullptr;
-	AttributeTreeNode* right = nullptr;
+		// Children
+		Node* left = nullptr;
+		Node* right = nullptr;
+	};
+
+	AttributeTree() = default;
+	AttributeTree(AttributeTree && rhs_);
+	AttributeTree(AttributeTree const& rhs_) = delete;
+	~AttributeTree();
+
+	void set(std::string name_, double value_);
+	double get(std::string const & name_) const;
+
+	Node *root = nullptr;
 };
-
-void setAttribute(AttributeTreeNode*& treeRoot_, std::string name_, double value_);
-
-double getAttributeValue(AttributeTreeNode const* treeRoot_, std::string const & name_);

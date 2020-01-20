@@ -11,14 +11,14 @@
 #include <stdexcept>
 
 // Helper aliases:
-using Record 		= AttributeTreeNode;
-using Records 		= ForwardList< UniquePtr<Record> >;
+using Record 		= AttributeTree;
+using Records 		= ForwardList< Record >;
 using Category 		= std::pair<std::string, Records>;
 using Categories 	= ForwardList< Category >;
 using Attributes 	= ForwardList< std::string >;
 	
 static std::string parseInput(std::string fileContents, DecisionTreeNode const& decisionTree_);
-static std::string categorize(AttributeTreeNode const& record, DecisionTreeNode const& decisionTree_);
+static std::string categorize(Record const& record, DecisionTreeNode const& decisionTree_);
 static std::string serializeCategories(Categories const& categories_, Attributes const& attributes_);
 static std::string readFileSequentially(std::string const& filePath_);
 static void displayHelp();
@@ -94,7 +94,7 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 		std::istringstream issF(currentLine);
 
 		// Setup record (read every attribute one by one and insert to tree)
-		UniquePtr<Record> record;
+		Record record;
 		auto at = attributes.head;
 		while(at)
 		{
@@ -102,13 +102,13 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 			if (!(issF >> val))
 				throw std::runtime_error("failed to read attribute \"" + at->value + "\"");
 
-			setAttribute(record.ptr, at->value, val);
+			record.set(at->value, val);
 
 			at = at->next;
 		}
 
 		// Determine category name:
-		std::string catName = categorize(*record, decisionTree_);
+		std::string catName = categorize(record, decisionTree_);
 		
 		// Find specified category...
 		auto cat = categories.findIf(
@@ -131,7 +131,7 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 }
 
 /////////////////////////////////////////
-std::string categorize(AttributeTreeNode const& record, DecisionTreeNode const& decisionTree_)
+std::string categorize(Record const& record_, DecisionTreeNode const& decisionTree_)
 {
 	using CNode = DecisionTreeNode const;
 
@@ -140,9 +140,9 @@ std::string categorize(AttributeTreeNode const& record, DecisionTreeNode const& 
 	{
 		bool choice = false; // left (false) / right (true)
 		if (root->cond.op == CNode::Condition::GreaterThan)
-			choice = getAttributeValue(&record, root->cond.attributeName) > root->cond.value;
+			choice = record_.get(root->cond.attributeName) > root->cond.value;
 		else if (root->cond.op == CNode::Condition::GreaterThan)
-			choice = getAttributeValue(&record, root->cond.attributeName) < root->cond.value;
+			choice = record_.get(root->cond.attributeName) < root->cond.value;
 
 		CNode::Anchor const& anch = choice ? root->succeededAnchor : root->failedAnchor;
 		if (anch.isLabel)
@@ -175,7 +175,7 @@ static std::string serializeCategories(Categories const& categories_, Attributes
 			while(at)
 			{
 				// Append attribute value:
-				output << getAttributeValue(rec->value.ptr, at->value) << ' ';
+				output << rec->value.get(at->value) << ' ';
 				at = at->next;
 			}
 
