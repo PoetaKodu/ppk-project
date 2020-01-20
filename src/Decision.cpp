@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <iomanip>
 #include <stdexcept>
 
 // Helper aliases:
@@ -145,7 +146,7 @@ std::string categorize(Record const& record_, DecisionTree const& decisionTree_)
 		bool choice = false; // left (false) / right (true)
 		if (root->cond.op == CNode::Condition::GreaterThan)
 			choice = record_.get(root->cond.attributeName) > root->cond.value;
-		else if (root->cond.op == CNode::Condition::GreaterThan)
+		else if (root->cond.op == CNode::Condition::LowerThan)
 			choice = record_.get(root->cond.attributeName) < root->cond.value;
 
 		CNode::Anchor const& anch = choice ? root->succeededAnchor : root->failedAnchor;
@@ -161,6 +162,8 @@ std::string categorize(Record const& record_, DecisionTree const& decisionTree_)
 static std::string serializeCategories(Categories const& categories_, Attributes const& attributes_)
 {
 	std::stringstream output;
+	output.precision(1);
+	output << std::fixed;
 
 	Categories::Node* cat = categories_.head;
 	while (cat)
