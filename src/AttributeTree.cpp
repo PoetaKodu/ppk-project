@@ -3,9 +3,9 @@
 #include <utility>
 
 ////////////////////////////////////////////////////////////////////
-AttributeTreeNode::AttributeTreeNode(std::string name_, double value_ )
+AttributeTreeNode::AttributeTreeNode(std::string const* name_, double value_ )
 	:
-	name( std::move(name_) ),
+	name( name_ ),
 	value( value_ )
 {
 }
@@ -13,12 +13,13 @@ AttributeTreeNode::AttributeTreeNode(std::string name_, double value_ )
 ////////////////////////////////////////////////////////////////////
 AttributeTreeNode::AttributeTreeNode(AttributeTreeNode && rhs_)
 	:
-	name( std::move(rhs_.name) ),
+	name( rhs_.name ),
 	value( rhs_.value ),
 	left(rhs_.left),
 	right(rhs_.right)
 {
 	rhs_.left = rhs_.right = nullptr;
+	rhs_.name = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -31,12 +32,12 @@ AttributeTreeNode::~AttributeTreeNode()
 }
 
 ////////////////////////////////////////////////////////////////////
-void AttributeTree::set(std::string name_, double value_)
+void AttributeTree::set(std::string const* name_, double value_)
 {
 	Node** processedNode = &root;
 	while(*processedNode != nullptr)
 	{
-		auto comp = name_.compare((*processedNode)->name);
+		auto comp = name_->compare(*(*processedNode)->name);
 		if (comp < 0)
 			processedNode = &(*processedNode)->left;
 		else if (comp > 0)
@@ -47,16 +48,16 @@ void AttributeTree::set(std::string name_, double value_)
 			return;
 		}
 	}
-	*processedNode = new Node{ std::move(name_), value_ };
+	*processedNode = new Node{ name_, value_ };
 }
 
 ////////////////////////////////////////////////////////////////////
-double AttributeTree::get(std::string const & name_) const
+double AttributeTree::get(std::string const& name_) const
 {
 	Node* n = root;
 	while (n)
 	{
-		auto comp = name_.compare(n->name);
+		auto comp = name_.compare(*n->name);
 		if (comp == 0)
 			return n->value;
 		else if (comp < 0)

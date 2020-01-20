@@ -106,7 +106,7 @@ std::string parseInput(std::string fileContents, DecisionTree const& decisionTre
 			if (!(issF >> val))
 				throw std::runtime_error("failed to read attribute \"" + at->value + "\"");
 
-			record.set(at->value, val);
+			record.set(&at->value, val);
 
 			at = at->next;
 		}
