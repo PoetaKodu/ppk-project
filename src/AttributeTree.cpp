@@ -34,21 +34,21 @@ AttributeTreeNode::~AttributeTreeNode()
 ////////////////////////////////////////////////////////////////////
 void AttributeTree::set(std::string const* name_, double value_)
 {
-	Node** processedNode = &root;
-	while(*processedNode != nullptr)
+	Node** pn = &root;
+	while(*pn != nullptr)
 	{
-		auto comp = name_->compare(*(*processedNode)->name);
+		auto comp = name_->compare(*(*pn)->name);
 		if (comp < 0)
-			processedNode = &(*processedNode)->left;
+			pn = &(*pn)->left;
 		else if (comp > 0)
-			processedNode = &(*processedNode)->right;
+			pn = &(*pn)->right;
 		else
 		{
-			(*processedNode)->value = value_;
+			(*pn)->value = value_;
 			return;
 		}
 	}
-	*processedNode = new Node{ name_, value_ };
+	*pn = new Node{ name_, value_ };
 }
 
 ////////////////////////////////////////////////////////////////////
