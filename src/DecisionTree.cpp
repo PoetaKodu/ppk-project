@@ -5,8 +5,16 @@
 #include <string>
 #include <iostream>
 
+
+// TODO: document this.
+static void readNode(DecisionTree::Node &node_, char const* beg_, char const* end_);
+// TODO: document this.
+static char const* readNodeCondition(DecisionTree::Node::Condition &cond_, char const* beg_, char const* end_);
+// TODO: document this.
+static char const* readNodeAnchor(DecisionTree::Node::Anchor &anchor_, char const* beg_, char const* end_);
+
 ///////////////////////////////////////////////////////////////////
-DecisionTreeNode::DecisionTreeNode(DecisionTreeNode && rhs_)
+DecisionTree::Node::Node(Node && rhs_)
 {
 	index = rhs_.index;
 	std::swap(rhs_.cond, cond);
@@ -17,7 +25,7 @@ DecisionTreeNode::DecisionTreeNode(DecisionTreeNode && rhs_)
 }
 
 ///////////////////////////////////////////////////////////////////
-DecisionTreeNode::~DecisionTreeNode()
+DecisionTree::Node::~Node()
 {
 	if (failed)
 		delete failed;
@@ -26,7 +34,7 @@ DecisionTreeNode::~DecisionTreeNode()
 }
 
 ///////////////////////////////////////////////////////////////////
-DecisionTreeNode::Anchor::Anchor(std::string label_)
+DecisionTree::Node::Anchor::Anchor(std::string label_)
 	:
 	label( std::move(label_) ),
 	isLabel( true )
@@ -34,7 +42,7 @@ DecisionTreeNode::Anchor::Anchor(std::string label_)
 }
 
 ///////////////////////////////////////////////////////////////////
-DecisionTreeNode::Anchor::Anchor(std::uint32_t nodeIndex_)
+DecisionTree::Node::Anchor::Anchor(std::uint32_t nodeIndex_)
 	:
 	nodeIndex( std::move(nodeIndex_) ),
 	isLabel( false )
@@ -43,34 +51,55 @@ DecisionTreeNode::Anchor::Anchor(std::uint32_t nodeIndex_)
 }
 
 ///////////////////////////////////////////////////////////////////
-DecisionTreeNode* readTree(char const* beg_, char const* end_)
+DecisionTree::DecisionTree(DecisionTree && rhs_)
+	:
+	root(rhs_.root)
+{
+	rhs_.root = nullptr;
+}
+
+///////////////////////////////////////////////////////////////////
+DecisionTree::~DecisionTree()
+{
+	if (root) delete root;
+}
+
+///////////////////////////////////////////////////////////////////
+DecisionTree& DecisionTree::operator=(DecisionTree && rhs_)
+{
+	std::swap(root, rhs_.root);
+	return *this;
+}
+
+///////////////////////////////////////////////////////////////////
+DecisionTree readDecisionTree(char const* beg_, char const* end_)
 {
 	constexpr char newLineCharacter = '\n';
 
-	DecisionTreeNode* root = nullptr;
+	DecisionTree tree;
 
 	do
 	{
 		auto endOfLine = std::find(beg_, end_, newLineCharacter);
 
-		DecisionTreeNode node;
+		DecisionTree::Node node;
 		readNode(node, beg_, endOfLine);
 
-		if (!root)
+		if (!tree.root)
 		{
-			root = new DecisionTreeNode( std::move(node) );
+			tree.root = new DecisionTree::Node( std::move(node) );
 		}
 		else
 		{
-			forEachUntil(*root,
-				[&](DecisionTreeNode & n)
+			tree.forEachUntil(
+				[&](DecisionTree::Node & n)
 				{
 					if (!n.failedAnchor.isLabel && n.failedAnchor.nodeIndex == node.index)
-						n.failed = new DecisionTreeNode{ std::move(node) };
+						n.failed = new DecisionTree::Node{ std::move(node) };
 					else if (!n.succeededAnchor.isLabel && n.succeededAnchor.nodeIndex == node.index)
-						n.succeeded = new DecisionTreeNode{ std::move(node) };
+						n.succeeded = new DecisionTree::Node{ std::move(node) };
 				},
-				[&](DecisionTreeNode & n)
+				[&](DecisionTree::Node & n)
 				{
 					return (!n.failedAnchor.isLabel && n.failedAnchor.nodeIndex == node.index) ||
 						(!n.succeededAnchor.isLabel && n.succeededAnchor.nodeIndex == node.index);
@@ -82,11 +111,11 @@ DecisionTreeNode* readTree(char const* beg_, char const* end_)
 	}
 	while(beg_ <= end_);
 
-	return root;
+	return tree;
 }
 
 ///////////////////////////////////////////////////////////////////
-void readNode(DecisionTreeNode &node_, char const* beg_, char const* end_)
+void readNode(DecisionTree::Node &node_, char const* beg_, char const* end_)
 {
 	constexpr char lineCommentCharacter = '%';
 
@@ -106,8 +135,8 @@ void readNode(DecisionTreeNode &node_, char const* beg_, char const* end_)
 		it = findFirstNonSpace(idxEnd, end_);
 	}
 
-	DecisionTreeNode::Condition cond;
-	DecisionTreeNode::Anchor failed, succeeded;
+	DecisionTree::Node::Condition cond;
+	DecisionTree::Node::Anchor failed, succeeded;
 
 	it = findFirstNonSpace( readNodeCondition(node_.cond, it, end_), end_ );
 	it = findFirstNonSpace( readNodeAnchor(node_.failedAnchor, it, end_), end_ );
@@ -115,9 +144,9 @@ void readNode(DecisionTreeNode &node_, char const* beg_, char const* end_)
 }
 
 ///////////////////////////////////////////////////////////////////
-char const* readNodeCondition(DecisionTreeNode::Condition &cond_, char const* beg_, char const* end_)
+char const* readNodeCondition(DecisionTree::Node::Condition &cond_, char const* beg_, char const* end_)
 {
-	using Cond = DecisionTreeNode::Condition;
+	using Cond = DecisionTree::Node::Condition;
 	constexpr char ltChar = '<';
 	constexpr char gtChar = '>';
 
@@ -155,9 +184,9 @@ char const* readNodeCondition(DecisionTreeNode::Condition &cond_, char const* be
 }
 
 ///////////////////////////////////////////////////////////////////
-char const* readNodeAnchor(DecisionTreeNode::Anchor &anchor_, char const* beg_, char const* end_)
+char const* readNodeAnchor(DecisionTree::Node::Anchor &anchor_, char const* beg_, char const* end_)
 {
-	using Anchor = DecisionTreeNode::Anchor;
+	using Anchor = DecisionTree::Node::Anchor;
 
 	auto anchorEnd = findFirstSpace(beg_, end_);
 	std::string b = std::string{ beg_, anchorEnd};

@@ -4,64 +4,84 @@
 
 #include <string>
 
-class DecisionTreeNode
+class DecisionTree
 {
 public:
-	DecisionTreeNode() = default;
-	DecisionTreeNode(DecisionTreeNode && rhs_);
-	~DecisionTreeNode();
-
-	struct Condition
+	class Node
 	{
-		std::string attributeName;
-		enum {
-			LowerThan,
-			GreaterThan
-		} op;
-		double value;
+	public:
+		Node() = default;
+		Node(Node && rhs_);
+		~Node();
+
+		struct Condition
+		{
+			std::string attributeName;
+			enum { LowerThan, GreaterThan } op;
+			double value;
+		};
+
+		struct Anchor
+		{
+			Anchor() = default;
+			Anchor(std::string label_);
+			Anchor(std::uint32_t nodeIndex_);
+
+			std::string label;
+			std::uint32_t nodeIndex = 0;
+
+			bool isLabel = false;
+		};
+
+		std::uint32_t index = 0;
+
+		Condition cond;
+
+		Anchor failedAnchor;
+		Anchor succeededAnchor;
+
+		Node* failed = nullptr;
+		Node* succeeded = nullptr;
 	};
 
-	struct Anchor
-	{
-		Anchor() = default;
-		Anchor(std::string label_);
-		Anchor(std::uint32_t nodeIndex_);
+	DecisionTree() = default;
+	~DecisionTree();
+	
+	DecisionTree(DecisionTree const& rhs_) = delete;
+	DecisionTree(DecisionTree && rhs_);
 
-		std::string label;
-		std::uint32_t nodeIndex = 0;
+	DecisionTree& operator=(DecisionTree const& rhs_) = delete;
+	DecisionTree& operator=(DecisionTree && rhs_);
 
-		bool isLabel = false;
-	};
 
-	std::uint32_t index = 0;
+	template <typename TWhatToDo, typename TShouldStop>
+	Node* forEachUntil(TWhatToDo whatToDo_, TShouldStop shouldStop_)
+	{	
+		if (root)
+			return this->forEachUntil(*root, whatToDo_, shouldStop_);
 
-	Condition cond;
+		return nullptr;
+	}
 
-	Anchor failedAnchor;
-	Anchor succeededAnchor;
+	Node* root = nullptr;
 
-	DecisionTreeNode* failed = nullptr;
-	DecisionTreeNode* succeeded = nullptr;
+private:
+	template <typename TWhatToDo, typename TShouldStop>
+	Node* forEachUntil(Node& node_, TWhatToDo whatToDo_, TShouldStop shouldStop_)
+	{	
+		whatToDo_(node_);
+
+		if (shouldStop_(node_))
+			return &node_;
+
+		Node* toReturn = nullptr;
+		if (node_.failed)
+			toReturn = forEachUntil(*node_.failed, whatToDo_, shouldStop_);
+		if (node_.succeeded && !toReturn)
+			toReturn = forEachUntil(*node_.succeeded, whatToDo_, shouldStop_);
+
+		return toReturn;
+	}
 };
 
-template <typename TWhatToDo, typename TShouldStop>
-DecisionTreeNode* forEachUntil(DecisionTreeNode &head_, TWhatToDo whatToDo_, TShouldStop shouldStop_)
-{	
-	whatToDo_(head_);
-
-	if (shouldStop_(head_))
-		return &head_;
-
-	DecisionTreeNode* toReturn = nullptr;
-	if (head_.failed)
-		toReturn = forEachUntil(*head_.failed, whatToDo_, shouldStop_);
-	if (head_.succeeded && !toReturn)
-		toReturn = forEachUntil(*head_.succeeded, whatToDo_, shouldStop_);
-
-	return toReturn;
-}
-
-DecisionTreeNode* readTree(char const* beg_, char const* end_);
-void readNode(DecisionTreeNode &node_, char const* beg_, char const* end_);
-char const* readNodeCondition(DecisionTreeNode::Condition &cond_, char const* beg_, char const* end_);
-char const* readNodeAnchor(DecisionTreeNode::Anchor &anchor_, char const* beg_, char const* end_);
+DecisionTree readDecisionTree(char const* beg_, char const* end_);

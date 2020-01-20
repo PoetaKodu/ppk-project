@@ -17,8 +17,8 @@ using Category 		= std::pair<std::string, Records>;
 using Categories 	= ForwardList< Category >;
 using Attributes 	= ForwardList< std::string >;
 	
-static std::string parseInput(std::string fileContents, DecisionTreeNode const& decisionTree_);
-static std::string categorize(Record const& record, DecisionTreeNode const& decisionTree_);
+static std::string parseInput(std::string fileContents, DecisionTree const& decisionTree_);
+static std::string categorize(Record const& record, DecisionTree const& decisionTree_);
 static std::string serializeCategories(Categories const& categories_, Attributes const& attributes_);
 static std::string readFileSequentially(std::string const& filePath_);
 static void displayHelp();
@@ -34,14 +34,14 @@ void run(ExecSetup const & exec_)
 	{
 		std::cout << "# Reading tree file: \"" << exec_.treeFile << "\"\n";
 
-		UniquePtr<DecisionTreeNode> decisionTree;
+		DecisionTree decisionTree;
 		
 		{
 			std::string fileContents = readFileSequentially(exec_.treeFile);
 			if (fileContents.empty())
 				throw std::runtime_error("tree file is empty or could not be read");
 
-			decisionTree = readTree(fileContents.data(), fileContents.data() + fileContents.size());
+			decisionTree = readDecisionTree(fileContents.data(), fileContents.data() + fileContents.size());
 		}
 
 		std::cout << "# Reading input file: \"" << exec_.inputFile << "\"\n";
@@ -52,7 +52,7 @@ void run(ExecSetup const & exec_)
 			if (fileContents.empty())
 				throw std::runtime_error("input file is empty or could not be read");
 
-			output = parseInput(std::move(fileContents), *decisionTree);
+			output = parseInput(std::move(fileContents), decisionTree);
 		}
 
 		std::cout << "# Writing output file: \"" << exec_.outputFile << '\"' << std::endl;
@@ -66,7 +66,7 @@ void run(ExecSetup const & exec_)
 }
 
 /////////////////////////////////////////
-std::string parseInput(std::string fileContents, DecisionTreeNode const& decisionTree_)
+std::string parseInput(std::string fileContents, DecisionTree const& decisionTree_)
 {
 	Attributes attributes;
 	Categories categories;
@@ -131,11 +131,11 @@ std::string parseInput(std::string fileContents, DecisionTreeNode const& decisio
 }
 
 /////////////////////////////////////////
-std::string categorize(Record const& record_, DecisionTreeNode const& decisionTree_)
+std::string categorize(Record const& record_, DecisionTree const& decisionTree_)
 {
-	using CNode = DecisionTreeNode const;
+	using CNode = DecisionTree::Node const;
 
-	CNode* root = &decisionTree_;
+	CNode* root = decisionTree_.root;
 	while (root)
 	{
 		bool choice = false; // left (false) / right (true)
