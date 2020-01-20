@@ -16,7 +16,7 @@ public:
 	public:
 		/**
 		 * Inicjalizuje instancje klasy @ref Node.
-		 * @param v wartość do przechowania
+		 * @param v_ wartość do przechowania
 		*/
 		Node(T v_)
 			: value(std::move(v_))

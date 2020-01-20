@@ -10,8 +10,8 @@
 #include <crtdbg.h>
 
 /** Funkcja główna programu.
- * @param argc ilość argumentów
- * @param argv tablica argumentów
+ * @param argc_ ilość argumentów
+ * @param argv_ tablica argumentów
  * @return kod błędu lub 0
 */
 int main(int argc_, char* argv_[])

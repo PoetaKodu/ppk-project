@@ -1,5 +1,3 @@
-/** @file Zawiera drzewo decyzyjne. */
-
 #pragma once
 
 #include "BasicTree.h"
@@ -41,7 +39,7 @@ public:
 		Anchor(std::string label_);
 
 		/** Inicjalizuje instancje klasy @ref Anchor identyfikatorem węzła.
-		 * @param label_ identyfikator węzła
+		 * @param nodeIndex_ identyfikator węzła
 		*/
 		Anchor(std::uint32_t nodeIndex_);
 
