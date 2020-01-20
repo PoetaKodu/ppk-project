@@ -160,9 +160,7 @@ std::string categorize(Record const& record_, DecisionTree const& decisionTree_)
 /////////////////////////////////////////
 static std::string serializeCategories(Categories const& categories_, Attributes const& attributes_)
 {
-	constexpr std::size_t outputStringReserve = 4 * 1024;
-
-	std::stringstream output(std::string(outputStringReserve, '\0'));
+	std::stringstream output;
 
 	Categories::Node* cat = categories_.head;
 	while (cat)
