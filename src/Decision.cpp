@@ -16,10 +16,15 @@ using Category 		= std::pair<std::string, Records>;
 using Categories 	= ForwardList< Category >;
 using Attributes 	= ForwardList< std::string >;
 	
+// TODO: document this:
 static std::string parseInput(std::string fileContents, DecisionTree const& decisionTree_);
+// TODO: document this:
 static std::string categorize(Record const& record, DecisionTree const& decisionTree_);
+// TODO: document this:
 static std::string serializeCategories(Categories const& categories_, Attributes const& attributes_);
+// TODO: document this:
 static std::string readFileSequentially(std::string const& filePath_);
+// TODO: document this:
 static void displayHelp();
 
 /////////////////////////////////////////

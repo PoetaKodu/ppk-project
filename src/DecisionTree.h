@@ -1,58 +1,54 @@
 #pragma once
 
 #include "Record.h"
+#include "BasicTree.h"
 
 #include <string>
 
-class DecisionTree
+
+class DecisionTreeNode
 {
 public:
-	class Node
+	DecisionTreeNode() = default;
+	DecisionTreeNode(DecisionTreeNode && rhs_);
+	~DecisionTreeNode();
+
+	struct Condition
 	{
-	public:
-		Node() = default;
-		Node(Node && rhs_);
-		~Node();
-
-		struct Condition
-		{
-			std::string attributeName;
-			enum { LowerThan, GreaterThan } op;
-			double value;
-		};
-
-		struct Anchor
-		{
-			Anchor() = default;
-			Anchor(std::string label_);
-			Anchor(std::uint32_t nodeIndex_);
-
-			std::string label;
-			std::uint32_t nodeIndex = 0;
-
-			bool isLabel = false;
-		};
-
-		std::uint32_t index = 0;
-
-		Condition cond;
-
-		Anchor failedAnchor;
-		Anchor succeededAnchor;
-
-		Node* failed = nullptr;
-		Node* succeeded = nullptr;
+		std::string attributeName;
+		enum { LowerThan, GreaterThan } op;
+		double value;
 	};
 
-	DecisionTree() = default;
-	~DecisionTree();
-	
-	DecisionTree(DecisionTree const& rhs_) = delete;
-	DecisionTree(DecisionTree && rhs_);
+	struct Anchor
+	{
+		Anchor() = default;
+		Anchor(std::string label_);
+		Anchor(std::uint32_t nodeIndex_);
 
-	DecisionTree& operator=(DecisionTree const& rhs_) = delete;
-	DecisionTree& operator=(DecisionTree && rhs_);
+		std::string label;
+		std::uint32_t nodeIndex = 0;
 
+		bool isLabel = false;
+	};
+
+	std::uint32_t index = 0;
+
+	Condition cond;
+
+	Anchor failedAnchor;
+	Anchor succeededAnchor;
+
+	DecisionTreeNode* failed = nullptr;
+	DecisionTreeNode* succeeded = nullptr;
+};
+
+class DecisionTree
+	: public BasicTree<DecisionTreeNode>
+{
+public:
+	using BasicTree::BasicTree;
+	using Node = DecisionTreeNode;
 
 	template <typename TWhatToDo, typename TShouldStop>
 	Node* forEachUntil(TWhatToDo whatToDo_, TShouldStop shouldStop_)

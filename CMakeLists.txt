@@ -8,6 +8,7 @@ set(DECISION_HEADERS
 		src/AttributeTree.h
 		src/DecisionTree.h
 		src/ForwardList.h
+		src/BasicTree.h
 	)
 
 set(DECISION_SOURCES

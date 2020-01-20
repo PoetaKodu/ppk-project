@@ -3,7 +3,7 @@
 #include <utility>
 
 ////////////////////////////////////////////////////////////////////
-AttributeTree::Node::Node(std::string name_, double value_ )
+AttributeTreeNode::AttributeTreeNode(std::string name_, double value_ )
 	:
 	name( std::move(name_) ),
 	value( value_ )
@@ -11,7 +11,7 @@ AttributeTree::Node::Node(std::string name_, double value_ )
 }
 
 ////////////////////////////////////////////////////////////////////
-AttributeTree::Node::Node(Node && rhs_)
+AttributeTreeNode::AttributeTreeNode(AttributeTreeNode && rhs_)
 	:
 	name( std::move(rhs_.name) ),
 	value( rhs_.value ),
@@ -22,26 +22,12 @@ AttributeTree::Node::Node(Node && rhs_)
 }
 
 ////////////////////////////////////////////////////////////////////
-AttributeTree::Node::~Node()
+AttributeTreeNode::~AttributeTreeNode()
 {
 	if (left)
 		delete left;
 	if (right)
 		delete right;
-}
-
-////////////////////////////////////////////////////////////////////
-AttributeTree::AttributeTree(AttributeTree && rhs_)
-	:
-	root(rhs_.root)
-{
-	rhs_.root = nullptr;
-}
-
-////////////////////////////////////////////////////////////////////
-AttributeTree::~AttributeTree()
-{
-	if (root) delete root;
 }
 
 ////////////////////////////////////////////////////////////////////
