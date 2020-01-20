@@ -131,7 +131,7 @@ std::string categorize(Record const& record_, DecisionTree const& decisionTree_)
 }
 
 /////////////////////////////////////////
-static std::string serializeCategories(Categories const& categories_, Attributes const& attributes_)
+std::string serializeCategories(Categories const& categories_, Attributes const& attributes_)
 {
 	std::stringstream output;
 	output.precision(1);
