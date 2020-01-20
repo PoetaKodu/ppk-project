@@ -15,7 +15,7 @@ public:
 	{
 	public:
 		/**
-		 * Inicjalizuje instancje klasy @see Node.
+		 * Inicjalizuje instancje klasy @ref Node.
 		 * @param v wartość do przechowania
 		*/
 		Node(T v_)
@@ -27,7 +27,7 @@ public:
 		Node* next = nullptr; 	///< wskaźnik na następny węzeł
 	};
 
-	/** Niszczy instancje szablonu klasy @see ForwardList.
+	/** Niszczy instancje szablonu klasy @ref ForwardList.
 	*/
 	~ForwardList()
 	{

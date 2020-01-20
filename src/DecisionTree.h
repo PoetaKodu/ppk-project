@@ -10,15 +10,15 @@
 class DecisionTreeNode
 {
 public:
-	/** Inicjalizuje instancje klasy @see DecisionTreeNode. */
+	/** Inicjalizuje instancje klasy @ref DecisionTreeNode. */
 	DecisionTreeNode() = default;
 
-	/** Inicjalizuje instancje klasy @see DecisionTreeNode przenosząc wartość z rhs_.
+	/** Inicjalizuje instancje klasy @ref DecisionTreeNode przenosząc wartość z @ref rhs_.
 	 * @param rhs_ inny obiekt, z którego wartość zostanie przeniesiona
 	*/
 	DecisionTreeNode(DecisionTreeNode && rhs_);
 
-	/** Niszczy instancje klasy @see DecisionTreeNode. */
+	/** Niszczy instancje klasy @ref DecisionTreeNode. */
 	~DecisionTreeNode();
 
 	/** Warunek drzewa decyzyjnego */
@@ -32,15 +32,15 @@ public:
 	/** Połączenie w drzewie decyzyjnym (albo id węzła albo etykieta) */
 	struct Anchor
 	{
-		/** Inicjalizuje instancje klasy @see Anchor. */
+		/** Inicjalizuje instancje klasy @ref Anchor. */
 		Anchor() = default;
 
-		/** Inicjalizuje instancje klasy @see Anchor etykietą.
+		/** Inicjalizuje instancje klasy @ref Anchor etykietą.
 		 * @param label_ etykieta
 		*/
 		Anchor(std::string label_);
 
-		/** Inicjalizuje instancje klasy @see Anchor identyfikatorem węzła.
+		/** Inicjalizuje instancje klasy @ref Anchor identyfikatorem węzła.
 		 * @param label_ identyfikator węzła
 		*/
 		Anchor(std::uint32_t nodeIndex_);

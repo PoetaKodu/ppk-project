@@ -15,21 +15,21 @@
 class AttributeTreeNode
 {
 public:
-	/** Inicjalizuje instancje klasy @see AttributeTreeNode. */
+	/** Inicjalizuje instancje klasy @ref AttributeTreeNode. */
 	AttributeTreeNode() = default;
 
-	/** Inicjalizuje instancje klasy @see AttributeTreeNode przenosząc wartość z rhs_.
+	/** Inicjalizuje instancje klasy @ref AttributeTreeNode przenosząc wartość z @ref rhs_.
 	 * @param rhs_ opis
 	*/
 	AttributeTreeNode(AttributeTreeNode && rhs_);
 
-	/** Inicjalizuje instancje klasy @see AttributeTreeNode za pomocą nazwy i wartości.
+	/** Inicjalizuje instancje klasy @ref AttributeTreeNode za pomocą nazwy i wartości.
 	 * @param name_ wskaźnik na nazwę atrybutu
 	 * @param value_ wartość atrybutu
 	*/
 	AttributeTreeNode(std::string const* name_, double value_ = 0);
 
-	/** Niszczy instancje klasy @see AttributeTreeNode.
+	/** Niszczy instancje klasy @ref AttributeTreeNode.
 	 * Niszczy również lewe i prawe poddrzewo.
 	*/
 	~AttributeTreeNode();

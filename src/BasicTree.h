@@ -11,15 +11,15 @@ class BasicTree
 {
 public:
 
-	/** Inicjalizuje instancje klasy @see BasicTree. */
+	/** Inicjalizuje instancje klasy @ref BasicTree. */
 	BasicTree() = default;
 
-	/** Usunięty konstruktor kopiujący klasy @see BasicTree.
+	/** Usunięty konstruktor kopiujący klasy @ref BasicTree.
 	 * @param rhs_ drugi obiekt.
 	*/
 	BasicTree(BasicTree const& rhs_) = delete;
 
-	/** Inicjalizuje instancje klasy @see BasicTree przenosząc wartość z rhs_.
+	/** Inicjalizuje instancje klasy @ref BasicTree przenosząc wartość z @ref rhs_.
 	 * @param rhs_ inny obiekt, z którego drzewo zostanie przeniesione
 	*/
 	BasicTree(BasicTree && rhs_)
@@ -29,19 +29,19 @@ public:
 		rhs_.root = nullptr;
 	}
 
-	/** Niszczy instancje klasy @see BasicTree. */
+	/** Niszczy instancje klasy @ref BasicTree. */
 	~BasicTree()
 	{
 		if (root) delete root;
 	}
 
-	/** Usunięty kopiujący operator przypisania klasy @see BasicTree.
+	/** Usunięty kopiujący operator przypisania klasy @ref BasicTree.
 	 * @param rhs_ inny obiekt
 	 * @return referencja na siebie
 	*/
 	BasicTree& operator=(BasicTree const& rhs_) = delete;
 
-	/** Przenosi wartość z rhs_ do siebie.
+	/** Przenosi wartość z @ref rhs_ do siebie.
 	 * @param rhs_ inny obiekt, z którego drzewo zostanie przeniesione
 	 * @return referencja na siebie
 	*/
