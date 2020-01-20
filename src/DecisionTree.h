@@ -59,8 +59,6 @@ public:
 		return nullptr;
 	}
 
-	Node* root = nullptr;
-
 private:
 	template <typename TWhatToDo, typename TShouldStop>
 	Node* forEachUntil(Node& node_, TWhatToDo whatToDo_, TShouldStop shouldStop_)
