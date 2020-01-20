@@ -8,7 +8,6 @@ set(DECISION_HEADERS
 		src/AttributeTree.h
 		src/DecisionTree.h
 		src/ForwardList.h
-		src/UniquePtr.h
 	)
 
 set(DECISION_SOURCES

@@ -3,7 +3,6 @@
 
 #include "AttributeTree.h"
 #include "ForwardList.h"
-#include "UniquePtr.h"
 
 #include <iostream>
 #include <fstream>
