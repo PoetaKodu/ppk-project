@@ -1,14 +1,21 @@
+/** @file Zawiera funkcję główną programu */
+
 #include "Decision.h"
 
 #include <iostream>
 #include <stdexcept>
 
-int main(int argc, char* argv[])
+/** Funkcja główna programu.
+ * @param argc ilość argumentów
+ * @param argv tablica argumentów
+ * @return kod błędu lub 0
+*/
+int main(int argc_, char* argv_[])
 {
 	ExecSetup execSetup;
 
 	try {
-		parseArguments(execSetup, argc, argv);
+		parseArguments(execSetup, argc_, argv_);
 
 		run(execSetup);
 	}
