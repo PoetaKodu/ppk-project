@@ -5,6 +5,10 @@
 #include <iostream>
 #include <stdexcept>
 
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
 /** Funkcja główna programu.
  * @param argc ilość argumentów
  * @param argv tablica argumentów
@@ -25,4 +29,6 @@ int main(int argc_, char* argv_[])
 	catch(...) {
 		std::cerr << "Error, no details available." << std::endl;
 	}
+
+	_CrtDumpMemoryLeaks();
 }
