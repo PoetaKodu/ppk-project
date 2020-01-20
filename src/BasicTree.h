@@ -19,7 +19,7 @@ public:
 	*/
 	BasicTree(BasicTree const& rhs_) = delete;
 
-	/** Inicjalizuje instancje klasy @see Basic Tree przenosząc wartość z rhs_.
+	/** Inicjalizuje instancje klasy @see BasicTree przenosząc wartość z rhs_.
 	 * @param rhs_ inny obiekt, z którego drzewo zostanie przeniesione
 	*/
 	BasicTree(BasicTree && rhs_)
