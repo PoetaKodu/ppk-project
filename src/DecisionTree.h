@@ -125,3 +125,26 @@ private:
  * @return wczytane drzewo decyzyjne
 */
 DecisionTree readDecisionTree(char const* beg_, char const* end_);
+
+/** Wczytuje pojedynczy węzeł drzewa decyzyjnego z tablicy znaków.
+ * @param[out] node_ węzeł drzewa do wypełnienia
+ * @param beg_ początek tablicy znaków
+ * @param end_ koniec tablicy znaków (ostatni + 1 element)
+*/
+void readNode(DecisionTreeNode &node_, char const* beg_, char const* end_);
+
+/** Wczytuje warunek węzła drzewa decyzyjnego z tablicy znaków.
+ * @param[out] cond_ warunek do wypełnienia
+ * @param beg_ początek tablicy znaków
+ * @param end_ koniec tablicy znaków (ostatni + 1 element)
+ * @return wskaźnik na znak, na którym skończono parsowanie tablicy wejściowej
+*/
+char const* readNodeCondition(DecisionTreeNode::Condition &cond_, char const* beg_, char const* end_);
+
+/** Wczytuje połączenie węzła drzewa decyzyjnego z tablicy znaków.
+ * @param[out] anchor_ połączenie do wypełnienia
+ * @param beg_ początek tablicy znaków
+ * @param end_ koniec tablicy znaków (ostatni + 1 element)
+ * @return wskaźnik na znak, na którym skończono parsowanie tablicy wejściowej
+*/
+char const* readNodeAnchor(DecisionTreeNode::Anchor &anchor_, char const* beg_, char const* end_);
