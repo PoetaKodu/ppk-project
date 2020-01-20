@@ -10,7 +10,7 @@
 #include <iomanip>
 #include <stdexcept>
 
-// Helper aliases:
+// Aliasy pomocnicze
 using Record 		= AttributeTree;
 using Records 		= ForwardList< Record >;
 using Category 		= std::pair<std::string, Records>;
