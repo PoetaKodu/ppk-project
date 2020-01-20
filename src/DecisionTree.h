@@ -22,9 +22,15 @@ public:
 	/** Warunek drzewa decyzyjnego */
 	struct Condition
 	{
-		std::string attributeName; 			///< nazwa porównywanego atrybutu
-		enum { LowerThan, GreaterThan } op; ///< operator porównania
-		double value; 						///< wartość z którą atrybut jest porównywany
+		/** Rodzaj operatora */
+		enum Op {
+			LowerThan,	///< operator "<"
+			GreaterThan ///< operator ">"
+		};
+
+		std::string attributeName; 	///< nazwa porównywanego atrybutu
+		Op op; 						///< operator porównania
+		double value; 				///< wartość z którą atrybut jest porównywany
 	};
 
 	/** Połączenie w drzewie decyzyjnym (albo id węzła albo etykieta) */
