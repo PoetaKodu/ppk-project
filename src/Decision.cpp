@@ -56,8 +56,6 @@ void run(ExecSetup const & exec_)
 	}
 	else
 	{
-		std::cout << "# Reading tree file: \"" << exec_.treeFile << "\"\n";
-
 		DecisionTree decisionTree;
 		
 		{
@@ -68,8 +66,6 @@ void run(ExecSetup const & exec_)
 			decisionTree = readDecisionTree(fileContents.data(), fileContents.data() + fileContents.size());
 		}
 
-		std::cout << "# Reading input file: \"" << exec_.inputFile << "\"\n";
-
 		std::string output;
 		{
 			std::string fileContents = readFileSequentially(exec_.inputFile);
@@ -78,8 +74,6 @@ void run(ExecSetup const & exec_)
 
 			output = parseInput(std::move(fileContents), decisionTree);
 		}
-
-		std::cout << "# Writing output file: \"" << exec_.outputFile << '\"' << std::endl;
 
 		std::ofstream outputFile(exec_.outputFile);
 		if (outputFile.is_open())
