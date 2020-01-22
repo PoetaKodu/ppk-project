@@ -18,7 +18,7 @@ public:
 	/** Inicjalizuje instancje klasy @ref AttributeTreeNode. */
 	AttributeTreeNode() = default;
 
-	/** Inicjalizuje instancje klasy @ref AttributeTreeNode przenosząc wartość z @ref rhs_.
+	/** Inicjalizuje instancje klasy @ref AttributeTreeNode przenosząc wartość z rhs_.
 	 * @param rhs_ opis
 	*/
 	AttributeTreeNode(AttributeTreeNode && rhs_);

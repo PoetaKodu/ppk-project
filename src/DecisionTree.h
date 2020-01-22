@@ -11,7 +11,7 @@ public:
 	/** Inicjalizuje instancje klasy @ref DecisionTreeNode. */
 	DecisionTreeNode() = default;
 
-	/** Inicjalizuje instancje klasy @ref DecisionTreeNode przenosząc wartość z @ref rhs_.
+	/** Inicjalizuje instancje klasy @ref DecisionTreeNode przenosząc wartość z rhs_.
 	 * @param rhs_ inny obiekt, z którego wartość zostanie przeniesiona
 	*/
 	DecisionTreeNode(DecisionTreeNode && rhs_);
@@ -79,7 +79,7 @@ public:
 
 	/** Wykonuje whatToDo_ dla każdego elementu drzewa, przestaje gdy shouldStop_ zwróci true.
 	 * Wykonanie shouldStop_ ma miejsce po wykonaniu whatToDo_.
-	 * @tparam TWhatToDo typ funkcji whatToDo_ o sygnaturze <typ>(Node&)
+	 * @tparam TWhatToDo typ funkcji whatToDo_ o sygnaturze typ(Node&)
 	 * @tparam TShouldStop typ funkcji shouldStop_ o sygnaturze bool(Node const&)
 	 * @param whatToDo_ funkcja operująca na węźle drzewa
 	 * @param shouldStop_ funkcja sprawdzająca, czy dla danego węzła zakończyć wykonywanie
@@ -98,7 +98,7 @@ private:
 
 	/** Wykonuje whatToDo_ dla każdego podwęzła elementu node_ w drzewie, przestaje gdy shouldStop_ zwróci true.
 	 * Wykonanie shouldStop_ ma miejsce po wykonaniu whatToDo_.
-	 * @tparam TWhatToDo typ funkcji whatToDo_ o sygnaturze <typ>(Node&)
+	 * @tparam TWhatToDo typ funkcji whatToDo_ o sygnaturze typ(Node&)
 	 * @tparam TShouldStop typ funkcji shouldStop_ o sygnaturze bool(Node const&)
 	 * @param node_ element drzewa
 	 * @param whatToDo_ funkcja operująca na węźle drzewa

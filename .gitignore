@@ -2,3 +2,4 @@ build
 bin
 private
 .vscode
+docs

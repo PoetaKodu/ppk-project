@@ -19,7 +19,7 @@ public:
 	*/
 	BasicTree(BasicTree const& rhs_) = delete;
 
-	/** Inicjalizuje instancje klasy @ref BasicTree przenosząc wartość z @ref rhs_.
+	/** Inicjalizuje instancje klasy @ref BasicTree przenosząc wartość z rhs_.
 	 * @param rhs_ inny obiekt, z którego drzewo zostanie przeniesione
 	*/
 	BasicTree(BasicTree && rhs_)
@@ -41,7 +41,7 @@ public:
 	*/
 	BasicTree& operator=(BasicTree const& rhs_) = delete;
 
-	/** Przenosi wartość z @ref rhs_ do siebie.
+	/** Przenosi wartość z rhs_ do siebie.
 	 * @param rhs_ inny obiekt, z którego drzewo zostanie przeniesione
 	 * @return referencja na siebie
 	*/
