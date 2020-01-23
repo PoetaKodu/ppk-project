@@ -47,8 +47,12 @@ void run(ExecSetup const & exec_)
 /////////////////////////////////////////
 std::string parseInput(std::string fileContents_, DecisionTree const& decisionTree_)
 {
-	Attributes attributes;
+	ForwardList< std::string > attributes;
 	Labels labels;
+
+	std::size_t reserveSize = 64 * 1024;
+	if (fileContents_.length() > 10 * 1024 * 1024)
+		reserveSize = 5 * 1024 * 1024;
 
 	std::istringstream iss(fileContents_);
 
@@ -78,7 +82,7 @@ std::string parseInput(std::string fileContents_, DecisionTree const& decisionTr
 	while(std::getline(iss, currentLine))
 	{
 		// Trim string and cut comments
-		currentLine = trimAndRemComment(currentLine);
+		currentLine = trimAndRemComment(std::move(currentLine));
 		if (currentLine.empty())
 			continue;
 
@@ -102,17 +106,23 @@ std::string parseInput(std::string fileContents_, DecisionTree const& decisionTr
 		std::string labelName = determineLabel(record, decisionTree_);
 		
 		// Find specified label...
-		Label* cat = labels.tryGet(labelName);
+		std::string* cat = labels.tryGet(labelName);
 
 		// ... or create new one if not found.
 		if (!cat)
+		{
 			cat = &(labels.set( std::move(labelName), {} ));
+			cat->reserve(reserveSize);
+		}
 
-		// Push record:
-		cat->push(std::move(record));
+		if (cat->capacity() < cat->size() + 1024 )
+			cat->reserve(reserveSize);
+
+		cat->append(currentLine);
+		cat->push_back('\n');
 	}
 
-	return serializeLabels(labels, attributes);
+	return serializeLabels(labels);
 }
 
 /////////////////////////////////////////
@@ -139,39 +149,20 @@ std::string determineLabel(Record const& record_, DecisionTree const& decisionTr
 }
 
 /////////////////////////////////////////
-std::string serializeLabels(Labels const& labels_, Attributes const& attributes_)
+std::string serializeLabels(Labels const& labels_)
 {
-	std::stringstream output;
-	output.precision(1);
-	output << std::fixed;
+	std::string output;
+	output.reserve(1 * 1024 * 1024);
 
 	labels_.forEach(
-		[&](std::string const& labelName, Label const& cat)
+		[&](std::string const& labelName, std::string const& cat)
 		{
-			// Append label name:
-			output << labelName << std::endl;
-			
-			// Iterate through every record that belongs to the label
-			Records::Node* rec = cat.head;
-			while (rec)
-			{
-				// Iterate through every attribute:
-				auto at = attributes_.head;
-				while(at)
-				{
-					// Append attribute value:
-					output << rec->value.get(&at->value) << ' ';
-					at = at->next;
-				}
-
-				// Append new line:
-				output << std::endl;
-				
-				rec = rec->next;
-			}
+			output += labelName;
+			output += '\n';
+			output += cat;
 		});
 
-	return output.str();
+	return output;
 }
 
 /////////////////////////////////////////

@@ -11,10 +11,7 @@
 
 // Aliasy pomocnicze
 using Record 		= AttributeTree;
-using Records 		= ForwardList< Record >;
-using Label 		= Records;
-using Labels 		= BinarySearchTree< std::string, Label >;
-using Attributes 	= ForwardList< std::string >;
+using Labels 		= BinarySearchTree< std::string, std::string >;
 
 /** Wykonuje główną logikę programu, korzystając z danych o trybie wykonania.
  * @param exec_ tryb wykonania
@@ -37,10 +34,9 @@ std::string determineLabel(Record const& record_, DecisionTree const& decisionTr
 
 /** Serializuje drzewo etykiet wraz z przyporządkowanymi rekordami do std::string-a.
  * @param labels_ drzewo etykiet
- * @param attributes_ lista atrybutów (wymagana przy czytaniu rekordów)
  * @return zserializowana lista etykiet wraz z rekordami
 */
-std::string serializeLabels(Labels const& labels_, Attributes const& attributes_);
+std::string serializeLabels(Labels const& labels_);
 
 /** Wczytuje plik sekwencyjnie.
  * @param filePath_ ścieżka do pliku.
