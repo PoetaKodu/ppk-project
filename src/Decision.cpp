@@ -46,7 +46,7 @@ void run(ExecSetup const & exec_)
 std::string parseInput(std::string fileContents_, DecisionTree const& decisionTree_)
 {
 	Attributes attributes;
-	Categories categories;
+	Labels labels;
 
 	std::istringstream iss(fileContents_);
 
@@ -84,25 +84,25 @@ std::string parseInput(std::string fileContents_, DecisionTree const& decisionTr
 			at = at->next;
 		}
 
-		// Determine category name:
-		std::string catName = categorize(record, decisionTree_);
+		// Determine label name:
+		std::string labelName = determineLabel(record, decisionTree_);
 		
-		// Find specified category...
-		Category* cat = categories.tryGet(catName);
+		// Find specified label...
+		Label* cat = labels.tryGet(labelName);
 
 		// ... or create new one if not found.
 		if (!cat)
-			cat = &(categories.set( std::move(catName), {} ));
+			cat = &(labels.set( std::move(labelName), {} ));
 
 		// Push record:
 		cat->push(std::move(record));
 	}
 
-	return serializeCategories(categories, attributes);
+	return serializeLabels(labels, attributes);
 }
 
 /////////////////////////////////////////
-std::string categorize(Record const& record_, DecisionTree const& decisionTree_)
+std::string determineLabel(Record const& record_, DecisionTree const& decisionTree_)
 {
 	using CNode = DecisionTree::Node const;
 
@@ -125,19 +125,19 @@ std::string categorize(Record const& record_, DecisionTree const& decisionTree_)
 }
 
 /////////////////////////////////////////
-std::string serializeCategories(Categories const& categories_, Attributes const& attributes_)
+std::string serializeLabels(Labels const& labels_, Attributes const& attributes_)
 {
 	std::stringstream output;
 	output.precision(1);
 	output << std::fixed;
 
-	categories_.forEach(
-		[&](std::string const& catName_, Category const& cat)
+	labels_.forEach(
+		[&](std::string const& labelName, Label const& cat)
 		{
-			// Append category name:
-			output << catName_ << std::endl;
+			// Append label name:
+			output << labelName << std::endl;
 			
-			// Iterate through every record that belongs to category
+			// Iterate through every record that belongs to the label
 			Records::Node* rec = cat.head;
 			while (rec)
 			{
