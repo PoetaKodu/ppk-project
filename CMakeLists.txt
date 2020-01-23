@@ -17,6 +17,7 @@ set(DECISION_SOURCES
 		src/Decision.cpp
 		src/ArgumentParsing.cpp
 		src/DecisionTree.cpp
+		src/TextHelper.cpp
 	)
 
 add_executable(Decision ${DECISION_HEADERS} ${DECISION_SOURCES})

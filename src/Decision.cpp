@@ -1,5 +1,7 @@
 #include "Decision.h"
 
+#include "TextHelper.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -51,9 +53,14 @@ std::string parseInput(std::string fileContents_, DecisionTree const& decisionTr
 	std::istringstream iss(fileContents_);
 
 	std::string currentLine;
+	
 	// Read first line (with attributes):
+	while(std::getline(iss, currentLine))
 	{
-		std::getline(iss, currentLine);
+		currentLine = trimAndRemComment(currentLine);
+		if (currentLine.empty())
+			continue;
+
 		std::istringstream issF(currentLine);
 		std::string attributeName;
 		while(issF >> attributeName)
@@ -63,11 +70,18 @@ std::string parseInput(std::string fileContents_, DecisionTree const& decisionTr
 
 			attributes.push(std::move(attributeName));
 		}
+
+		break;
 	}
 
 	// Read the rest of the file (line by line)
 	while(std::getline(iss, currentLine))
 	{
+		// Trim string and cut comments
+		currentLine = trimAndRemComment(currentLine);
+		if (currentLine.empty())
+			continue;
+
 		std::istringstream issF(currentLine);
 
 		// Setup record (read every attribute one by one and insert to tree)
