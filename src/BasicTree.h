@@ -10,7 +10,7 @@ template <typename T>
 class BasicTree
 {
 public:
-
+	using Node = T;
 	/** Inicjalizuje instancje klasy @ref BasicTree. */
 	BasicTree() = default;
 

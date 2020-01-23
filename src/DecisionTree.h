@@ -68,15 +68,7 @@ public:
 };
 
 /** Drzewo decyzyjne */
-class DecisionTree
-	: public BasicTree<DecisionTreeNode>
-{
-public:
-	/// Używaj konstruktorów klasy bazowej drzewa
-	using BasicTree::BasicTree;
-
-	using Node = DecisionTreeNode; ///< typ węzła
-};
+using DecisionTree = BasicTree<DecisionTreeNode>;
 
 /** Wczytuje drzewo decyzyjne z tablicy znaków.
  * @param beg_ początek tablicy znaków
