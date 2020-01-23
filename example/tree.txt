@@ -1,2 +1,4 @@
-0 wzrost<190.0 1 koszykowka % korzeń
-1 wyskok>50.0 koszykowka lekkoatletyka
+0 wzrost<190.0 1 2 % korzeń
+1 wyskok>50.0 3 lekkoatletyka
+2 czas_100m<11.0 koszykowka pilka_nozna
+3 czas_100m>12.0 koszykowka siatkowka
