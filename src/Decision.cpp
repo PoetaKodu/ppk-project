@@ -20,18 +20,29 @@ void run(ExecSetup const & exec_)
 		DecisionTree decisionTree;
 		
 		{
-			std::string fileContents = readFileSequentially(exec_.treeFile);
+			std::string fileContents;
+			try { 
+				fileContents = readFileSequentially(exec_.treeFile);
+			}
+			catch(...) {
+				throw std::runtime_error("tree file could not be read");
+			}
+
 			if (fileContents.empty())
-				throw std::runtime_error("tree file is empty or could not be read");
+				throw std::runtime_error("tree file cannot be empty");
 
 			decisionTree = readDecisionTree(fileContents.data(), fileContents.data() + fileContents.size());
 		}
 
 		std::string output;
 		{
-			std::string fileContents = readFileSequentially(exec_.inputFile);
-			if (fileContents.empty())
-				throw std::runtime_error("input file is empty or could not be read");
+			std::string fileContents;
+			try { 
+				fileContents = readFileSequentially(exec_.inputFile);
+			}
+			catch(...) {
+				throw std::runtime_error("input file could not be read");
+			}
 
 			output = parseInput(std::move(fileContents), decisionTree);
 		}
@@ -182,6 +193,8 @@ std::string readFileSequentially(std::string const& filePath_)
 			result.append(buffer, buffer + bufferSize);
 		result.append(buffer, buffer + file.gcount());
 	}
+	else
+		throw std::runtime_error("could not open file \"" + filePath_ + "\"");
 	
 	result.shrink_to_fit();
 	return result;
