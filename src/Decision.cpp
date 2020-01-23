@@ -80,9 +80,6 @@ std::string parseInput(std::string fileContents_, DecisionTree const& decisionTr
 		std::string attributeName;
 		while(issF >> attributeName)
 		{
-			if (attributeName.size() >= 1 && attributeName[0] == '%')
-				break;
-
 			attributes.push(std::move(attributeName));
 		}
 
