@@ -35,6 +35,16 @@ public:
 		if (root) delete root;
 	}
 
+	/** Porzuca wskaźnik na korzeń drzewa, zwracając go 
+	 * @return wskaźnik na korzeń drzewa lub nullptr.
+	*/
+	T* release()
+	{
+		T* r = root;
+		root = nullptr;
+		return r;
+	}
+
 	/** Usunięty kopiujący operator przypisania klasy @ref BasicTree.
 	 * @param rhs_ inny obiekt
 	 * @return referencja na siebie

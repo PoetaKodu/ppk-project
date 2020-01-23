@@ -8,6 +8,7 @@ set(DECISION_HEADERS
 		src/AttributeTree.h
 		src/DecisionTree.h
 		src/ForwardList.h
+		src/BinarySearchTree.h
 		src/BasicTree.h
 	)
 
@@ -15,7 +16,6 @@ set(DECISION_SOURCES
 		src/Main.cpp
 		src/Decision.cpp
 		src/ArgumentParsing.cpp
-		src/AttributeTree.cpp
 		src/DecisionTree.cpp
 	)
 

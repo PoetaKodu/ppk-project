@@ -117,9 +117,9 @@ std::string categorize(Record const& record_, DecisionTree const& decisionTree_)
 	{
 		bool choice = false; // left (false) / right (true)
 		if (root->cond.op == CNode::Condition::GreaterThan)
-			choice = record_.get(root->cond.attributeName) > root->cond.value;
+			choice = record_.get(&root->cond.attributeName) > root->cond.value;
 		else if (root->cond.op == CNode::Condition::LowerThan)
-			choice = record_.get(root->cond.attributeName) < root->cond.value;
+			choice = record_.get(&root->cond.attributeName) < root->cond.value;
 
 		CNode::Anchor const& anch = choice ? root->succeededAnchor : root->failedAnchor;
 		if (anch.isLabel)
@@ -152,7 +152,7 @@ std::string serializeCategories(Categories const& categories_, Attributes const&
 			while(at)
 			{
 				// Append attribute value:
-				output << rec->value.get(at->value) << ' ';
+				output << rec->value.get(&at->value) << ' ';
 				at = at->next;
 			}
 
