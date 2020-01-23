@@ -1,5 +1,6 @@
 #include "DecisionTree.h"
 
+#include "BinarySearchTree.h"
 #include "TextHelper.h"
 
 #include <string>
@@ -49,6 +50,8 @@ DecisionTree readDecisionTree(char const* beg_, char const* end_)
 
 	DecisionTree tree;
 
+	BinarySearchTree<std::uint32_t, DecisionTree::Node*> parentsOfFailed, parentsOfSucceeded;
+
 	do
 	{
 		auto endOfLine = std::find(beg_, end_, newLineCharacter);
@@ -56,27 +59,28 @@ DecisionTree readDecisionTree(char const* beg_, char const* end_)
 		DecisionTreeNode node;
 		readNode(node, beg_, endOfLine);
 
+		DecisionTreeNode* insertedNode = nullptr;
 		if (!tree.root)
 		{
-			tree.root = new DecisionTreeNode( std::move(node) );
+			tree.root = insertedNode = new DecisionTreeNode( std::move(node) );
 		}
 		else
 		{
-			tree.forEachUntil(
-				[&](DecisionTreeNode & n)
-				{
-					if (!n.failedAnchor.isLabel && n.failedAnchor.nodeIndex == node.index)
-						n.failed = new DecisionTreeNode{ std::move(node) };
-					else if (!n.succeededAnchor.isLabel && n.succeededAnchor.nodeIndex == node.index)
-						n.succeeded = new DecisionTreeNode{ std::move(node) };
-				},
-				[&](DecisionTreeNode & n)
-				{
-					return (!n.failedAnchor.isLabel && n.failedAnchor.nodeIndex == node.index) ||
-						(!n.succeededAnchor.isLabel && n.succeededAnchor.nodeIndex == node.index);
-				}
-			);
+			DecisionTreeNode* parent = tree.root;
+			bool useFailedAnchor = true;
+
+			if(parent = parentsOfFailed.get(node.index))
+				parent->failed = insertedNode = new DecisionTreeNode{ std::move(node) };
+			else if (parent = parentsOfSucceeded.get(node.index))
+				parent->succeeded = insertedNode = new DecisionTreeNode{ std::move(node) };
+			else
+				throw std::runtime_error("tree structure file is broken (invalid link)");
 		}
+
+		if (!insertedNode->failedAnchor.isLabel)
+			parentsOfFailed.set(insertedNode->failedAnchor.nodeIndex, insertedNode);
+		if (!insertedNode->succeededAnchor.isLabel)
+			parentsOfSucceeded.set(insertedNode->succeededAnchor.nodeIndex, insertedNode);
 
 		beg_ = endOfLine + 1;
 	}
