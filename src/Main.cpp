@@ -5,9 +5,10 @@
 #include <iostream>
 #include <stdexcept>
 
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
+// Windows memory leak detection:
+// #define _CRTDBG_MAP_ALLOC
+// #include <stdlib.h>
+// #include <crtdbg.h>
 
 /** Funkcja główna programu.
  * @param argc_ ilość argumentów
@@ -29,6 +30,7 @@ int main(int argc_, char* argv_[])
 	catch(...) {
 		std::cerr << "Error, no details available." << std::endl;
 	}
-
-	_CrtDumpMemoryLeaks();
+	
+	// Windows memory leak detection:
+	// _CrtDumpMemoryLeaks();
 }
