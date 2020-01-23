@@ -88,20 +88,14 @@ std::string parseInput(std::string fileContents_, DecisionTree const& decisionTr
 		std::string catName = categorize(record, decisionTree_);
 		
 		// Find specified category...
-		auto cat = categories.findIf(
-				[&](Category const& c) {
-					return c.first == catName;
-				}
-			);
+		Category* cat = categories.tryGet(catName);
 
 		// ... or create new one if not found.
 		if (!cat)
-			cat = &(categories.push( { std::move(catName), {} } ));
+			cat = &(categories.set( std::move(catName), {} ));
 
 		// Push record:
-		auto& records = cat->value.second;
-
-		records.push( std::move(record) );
+		cat->push(std::move(record));
 	}
 
 	return serializeCategories(categories, attributes);
@@ -137,32 +131,31 @@ std::string serializeCategories(Categories const& categories_, Attributes const&
 	output.precision(1);
 	output << std::fixed;
 
-	Categories::Node* cat = categories_.head;
-	while (cat)
-	{
-		// Append category name:
-		output << cat->value.first << std::endl;
-		
-		// Iterate through every record that belongs to category
-		Records::Node* rec = cat->value.second.head;
-		while (rec)
+	categories_.forEach(
+		[&](std::string const& catName_, Category const& cat)
 		{
-			// Iterate through every attribute:
-			auto at = attributes_.head;
-			while(at)
-			{
-				// Append attribute value:
-				output << rec->value.get(&at->value) << ' ';
-				at = at->next;
-			}
-
-			// Append new line:
-			output << std::endl;
+			// Append category name:
+			output << catName_ << std::endl;
 			
-			rec = rec->next;
-		}
-		cat = cat->next;
-	}
+			// Iterate through every record that belongs to category
+			Records::Node* rec = cat.head;
+			while (rec)
+			{
+				// Iterate through every attribute:
+				auto at = attributes_.head;
+				while(at)
+				{
+					// Append attribute value:
+					output << rec->value.get(&at->value) << ' ';
+					at = at->next;
+				}
+
+				// Append new line:
+				output << std::endl;
+				
+				rec = rec->next;
+			}
+		});
 
 	return output.str();
 }

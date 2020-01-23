@@ -12,8 +12,8 @@
 // Aliasy pomocnicze
 using Record 		= AttributeTree;
 using Records 		= ForwardList< Record >;
-using Category 		= std::pair<std::string, Records>;
-using Categories 	= ForwardList< Category >;
+using Category 		= Records;
+using Categories 	= BinarySearchTree< std::string, Category >;
 using Attributes 	= ForwardList< std::string >;
 
 /** Wykonuje główną logikę programu, korzystając z danych o trybie wykonania.

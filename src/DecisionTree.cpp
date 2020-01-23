@@ -66,13 +66,13 @@ DecisionTree readDecisionTree(char const* beg_, char const* end_)
 		}
 		else
 		{
-			DecisionTreeNode* parent = tree.root;
+			DecisionTreeNode** parent = &tree.root;
 			bool useFailedAnchor = true;
 
-			if(parent = parentsOfFailed.get(node.index))
-				parent->failed = insertedNode = new DecisionTreeNode{ std::move(node) };
-			else if (parent = parentsOfSucceeded.get(node.index))
-				parent->succeeded = insertedNode = new DecisionTreeNode{ std::move(node) };
+			if(parent = parentsOfFailed.tryGet(node.index))
+				(*parent)->failed = insertedNode = new DecisionTreeNode{ std::move(node) };
+			else if (parent = parentsOfSucceeded.tryGet(node.index))
+				(*parent)->succeeded = insertedNode = new DecisionTreeNode{ std::move(node) };
 			else
 				throw std::runtime_error("tree structure file is broken (invalid link)");
 		}
