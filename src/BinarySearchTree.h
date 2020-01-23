@@ -124,7 +124,6 @@ public:
 	/** Zwraca wskaźnik na wartość węzła o danym kluczu.
 	 * Zwraca nullptr, jeśli węzła o danym kluczu nie znaleziono.
 	 * @param key_ klucz
-	 * @param alt_ wartość zastępcza
 	 * @param comp_ funkcja porównująca dwa klucze (lhs < rhs)
 	 * @return wartość
 	*/

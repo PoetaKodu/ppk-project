@@ -61,5 +61,5 @@ public:
 		return *this;
 	}
 
-	T* root = nullptr; //< korzeń drzewa
+	T* root = nullptr; ///< korzeń drzewa
 };
