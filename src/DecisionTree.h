@@ -81,8 +81,9 @@ DecisionTree readDecisionTree(char const* beg_, char const* end_);
  * @param[out] node_ węzeł drzewa do wypełnienia
  * @param beg_ początek tablicy znaków
  * @param end_ koniec tablicy znaków (ostatni + 1 element)
+ * @return true jeśli udało się wczytać, false jeśli linia była pusta.
 */
-void readNode(DecisionTreeNode &node_, char const* beg_, char const* end_);
+bool readNode(DecisionTreeNode &node_, char const* beg_, char const* end_);
 
 /** Wczytuje warunek węzła drzewa decyzyjnego z tablicy znaków.
  * @param[out] cond_ warunek do wypełnienia

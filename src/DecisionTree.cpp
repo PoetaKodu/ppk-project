@@ -57,30 +57,32 @@ DecisionTree readDecisionTree(char const* beg_, char const* end_)
 		auto endOfLine = std::find(beg_, end_, newLineCharacter);
 
 		DecisionTreeNode node;
-		readNode(node, beg_, endOfLine);
-
-		DecisionTreeNode* insertedNode = nullptr;
-		if (!tree.root)
+		
+		if (readNode(node, beg_, endOfLine))
 		{
-			tree.root = insertedNode = new DecisionTreeNode( std::move(node) );
-		}
-		else
-		{
-			DecisionTreeNode** parent = &tree.root;
-			bool useFailedAnchor = true;
-
-			if(parent = parentsOfFailed.tryGet(node.index))
-				(*parent)->failed = insertedNode = new DecisionTreeNode{ std::move(node) };
-			else if (parent = parentsOfSucceeded.tryGet(node.index))
-				(*parent)->succeeded = insertedNode = new DecisionTreeNode{ std::move(node) };
+			DecisionTreeNode* insertedNode = nullptr;
+			if (!tree.root)
+			{
+				tree.root = insertedNode = new DecisionTreeNode( std::move(node) );
+			}
 			else
-				throw std::runtime_error("tree structure file is broken (invalid link)");
-		}
+			{
+				DecisionTreeNode** parent = &tree.root;
+				bool useFailedAnchor = true;
 
-		if (!insertedNode->failedAnchor.isLabel)
-			parentsOfFailed.set(insertedNode->failedAnchor.nodeIndex, insertedNode);
-		if (!insertedNode->succeededAnchor.isLabel)
-			parentsOfSucceeded.set(insertedNode->succeededAnchor.nodeIndex, insertedNode);
+				if(parent = parentsOfFailed.tryGet(node.index))
+					(*parent)->failed = insertedNode = new DecisionTreeNode{ std::move(node) };
+				else if (parent = parentsOfSucceeded.tryGet(node.index))
+					(*parent)->succeeded = insertedNode = new DecisionTreeNode{ std::move(node) };
+				else
+					throw std::runtime_error("tree structure file is broken (invalid link)");
+			}
+
+			if (!insertedNode->failedAnchor.isLabel)
+				parentsOfFailed.set(insertedNode->failedAnchor.nodeIndex, insertedNode);
+			if (!insertedNode->succeededAnchor.isLabel)
+				parentsOfSucceeded.set(insertedNode->succeededAnchor.nodeIndex, insertedNode);
+		}
 
 		beg_ = endOfLine + 1;
 	}
@@ -90,7 +92,7 @@ DecisionTree readDecisionTree(char const* beg_, char const* end_)
 }
 
 ///////////////////////////////////////////////////////////////////
-void readNode(DecisionTreeNode &node_, char const* beg_, char const* end_)
+bool readNode(DecisionTreeNode &node_, char const* beg_, char const* end_)
 {
 	constexpr char lineCommentCharacter = '%';
 
@@ -99,6 +101,10 @@ void readNode(DecisionTreeNode &node_, char const* beg_, char const* end_)
 
 	// Trim line comment
 	end_ = std::find(beg_, end_, lineCommentCharacter);
+
+	// Empty line:
+	if (beg_ == end_)
+		return false;
 
 	auto it = beg_;
 
@@ -116,6 +122,8 @@ void readNode(DecisionTreeNode &node_, char const* beg_, char const* end_)
 	it = findFirstNonSpace( readNodeCondition(node_.cond, it, end_), end_ );
 	it = findFirstNonSpace( readNodeAnchor(node_.failedAnchor, it, end_), end_ );
 	readNodeAnchor(node_.succeededAnchor, it, end_);
+
+	return true;
 }
 
 ///////////////////////////////////////////////////////////////////
