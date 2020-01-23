@@ -28,4 +28,4 @@ char const* findFirstSpace(char const* beg_, char const* end_);
  * @param line_ linia tekstu
  * @return linia po usunięciu komentarza oraz spacji z początku.
  * */
-std::string trimAndRemComment(std::string line_);
+std::string trimAndRemComment(std::string const& line_);

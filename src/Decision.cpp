@@ -82,7 +82,7 @@ std::string parseInput(std::string fileContents_, DecisionTree const& decisionTr
 	while(std::getline(iss, currentLine))
 	{
 		// Trim string and cut comments
-		currentLine = trimAndRemComment(std::move(currentLine));
+		currentLine = trimAndRemComment(currentLine);
 		if (currentLine.empty())
 			continue;
 

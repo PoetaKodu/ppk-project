@@ -19,16 +19,15 @@ char const* findFirstSpace(char const* beg_, char const* end_)
 }
 
 ////////////////////////////////
-std::string trimAndRemComment(std::string line_)
+std::string trimAndRemComment(std::string const& line_)
 {
-	auto commentPos = line_.find('%');
-	if (commentPos != std::string::npos)
-		line_ = line_.substr(0, commentPos);
-
 	auto notSpacePos = line_.find_first_not_of(" \t\v");
 	if (notSpacePos == std::string::npos)
 		return {};
-	else
-		line_ = line_.substr(notSpacePos);
-	return line_;
+
+	auto commentPos = line_.find('%', notSpacePos);
+	if (commentPos != std::string::npos)
+		return line_.substr(notSpacePos, commentPos - notSpacePos);
+
+	return line_.substr(notSpacePos);
 }
