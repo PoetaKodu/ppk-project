@@ -70,12 +70,31 @@ std::string parseInput(std::string fileContents_, DecisionTree const& decisionTr
 	ForwardList< std::string > attributes;
 	Labels labels;
 
-	std::istringstream iss(fileContents_);
 
 	std::string currentLine;
 	
+	auto getLine = [](std::string const& content, std::string & out, std::size_t &startPos) -> bool
+		{
+			if (startPos + 1 >= content.size())
+				return false;
+			
+			auto endLine = content.find('\n', startPos);
+			if (endLine == std::string::npos)
+			{
+				out = content.substr(startPos);
+				startPos = content.size();
+			}
+			else
+			{
+				out = content.substr(startPos, endLine - startPos);
+				startPos = endLine + 1;
+			}
+			return true;
+		};
+	std::size_t startPos = 0;
+
 	// Read first line (with attributes):
-	while(std::getline(iss, currentLine))
+	while(getLine(fileContents_, currentLine, startPos))
 	{
 		currentLine = trimAndRemComment(currentLine);
 		if (currentLine.empty())
@@ -94,7 +113,7 @@ std::string parseInput(std::string fileContents_, DecisionTree const& decisionTr
 	Record record;
 
 	// Read the rest of the file (line by line)
-	while(std::getline(iss, currentLine))
+	while(getLine(fileContents_, currentLine, startPos))
 	{
 		// Trim string and cut comments
 		currentLine = trimAndRemComment(currentLine);
