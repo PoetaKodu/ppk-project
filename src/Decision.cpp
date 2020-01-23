@@ -58,12 +58,17 @@ void run(ExecSetup const & exec_)
 /////////////////////////////////////////
 std::string parseInput(std::string fileContents_, DecisionTree const& decisionTree_)
 {
+	
+	constexpr std::size_t baseReserveSize = 64 * 1024;
+	constexpr std::size_t bigFileReserveSize = 5 * 1024 * 1024;
+	constexpr std::size_t bigFileThreshold = 10 * 1024 * 1024;
+
+	std::size_t reserveSize = baseReserveSize;
+	if (fileContents_.length() > bigFileThreshold)
+		reserveSize = bigFileReserveSize;
+
 	ForwardList< std::string > attributes;
 	Labels labels;
-
-	std::size_t reserveSize = 64 * 1024;
-	if (fileContents_.length() > 10 * 1024 * 1024)
-		reserveSize = 5 * 1024 * 1024;
 
 	std::istringstream iss(fileContents_);
 
@@ -123,9 +128,6 @@ std::string parseInput(std::string fileContents_, DecisionTree const& decisionTr
 			cat->reserve(reserveSize);
 		}
 
-		if (cat->capacity() < cat->size() + 1024 )
-			cat->reserve(reserveSize);
-
 		cat->append(currentLine);
 		cat->push_back('\n');
 	}
@@ -159,8 +161,9 @@ std::string determineLabel(Record const& record_, DecisionTree const& decisionTr
 /////////////////////////////////////////
 std::string serializeLabels(Labels const& labels_)
 {
+	constexpr std::size_t initialReserveSize = 1 * 1024 * 1024;
 	std::string output;
-	output.reserve(1 * 1024 * 1024);
+	output.reserve(initialReserveSize);
 
 	labels_.forEach(
 		[&](std::string const& labelName, std::string const& cat)
