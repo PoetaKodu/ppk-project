@@ -1,4 +1,4 @@
-/** @file Drzewo atrybutów dla rekordów. */
+/** Drzewo atrybutów dla rekordów. */
 
 #pragma once
 

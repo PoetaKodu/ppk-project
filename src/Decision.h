@@ -1,4 +1,4 @@
-/** @file Główna logika programu. */
+/** Główna logika programu. */
 
 #pragma once
 

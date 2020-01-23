@@ -1,4 +1,4 @@
-/** @file Szablon klasy bazowej dla drzew binarnych. */
+/** Szablon klasy bazowej dla drzew binarnych. */
 #pragma once
 
 #include <utility>

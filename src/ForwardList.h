@@ -1,4 +1,4 @@
-/** @file Szablon listy jednokierunkowej. */
+/** Szablon listy jednokierunkowej. */
 
 #pragma once
 

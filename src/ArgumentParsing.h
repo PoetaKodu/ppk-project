@@ -1,4 +1,4 @@
-/** @file Parsowanie argumentów */
+/** Parsowanie argumentów */
 #pragma once
 
 #include <string>

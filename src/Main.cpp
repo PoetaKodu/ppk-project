@@ -1,4 +1,4 @@
-/** @file Zawiera funkcję główną programu */
+/** Zawiera funkcję główną programu */
 
 #include "Decision.h"
 
