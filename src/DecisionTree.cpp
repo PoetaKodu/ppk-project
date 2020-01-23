@@ -51,7 +51,6 @@ DecisionTree readDecisionTree(char const* beg_, char const* end_)
 	DecisionTree tree;
 
 	BinarySearchTree<std::uint32_t, DecisionTree::Node*> parentsOfFailed, parentsOfSucceeded;
-
 	do
 	{
 		auto endOfLine = std::find(beg_, end_, newLineCharacter);
@@ -138,7 +137,7 @@ char const* readNodeCondition(DecisionTreeNode::Condition &cond_, char const* be
 	// Read condition attribute name:
 	{
 		auto attEnd = std::find_if(it, end_,
-			[](char c) {
+			[&](char c) {
 				return c == ltChar || c == gtChar || isWhitespace(c);
 			});
 
