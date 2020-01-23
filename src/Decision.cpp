@@ -91,6 +91,8 @@ std::string parseInput(std::string fileContents_, DecisionTree const& decisionTr
 		break;
 	}
 
+	Record record;
+
 	// Read the rest of the file (line by line)
 	while(std::getline(iss, currentLine))
 	{
@@ -102,7 +104,6 @@ std::string parseInput(std::string fileContents_, DecisionTree const& decisionTr
 		std::istringstream issF(currentLine);
 
 		// Setup record (read every attribute one by one and insert to tree)
-		Record record;
 		auto at = attributes.head;
 		while(at)
 		{
